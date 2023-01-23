@@ -33,12 +33,13 @@ Route::post('recaptcha', function (Request $request) {
 Route::get('provinces', [\App\Http\Controllers\ProvinceController::class, 'index']);
 Route::get('provinces/{province}/cities', [\App\Http\Controllers\ProvinceController::class, 'show']);
 
-Route::resource('products', \App\Http\Controllers\ProductController::class);
-Route::resource('categories', \App\Http\Controllers\CategoryController::class);
+Route::get('products', [\App\Http\Controllers\ProductController::class, 'activeIndex']);
+Route::get('products/{product}', [\App\Http\Controllers\ProductController::class, 'showProduct']);
+
+Route::get('categories', [\App\Http\Controllers\CategoryController::class, 'activeIndex']);
 Route::get('categories/{category}/products', [\App\Http\Controllers\CategoryController::class, 'products']);
 
-
-Route::get('brands', [\App\Http\Controllers\BrandController::class, 'index']);
+Route::get('brands', [\App\Http\Controllers\BrandController::class, 'activeIndex']);
 Route::get('brands/{brand}/products', [\App\Http\Controllers\BrandController::class, 'products']);
 
 

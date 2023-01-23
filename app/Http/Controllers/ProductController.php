@@ -10,7 +10,7 @@ use Intervention\Image\Facades\Image;
 class ProductController extends Controller {
 
     public function __construct() {
-        $this->middleware(['auth:admin-api'])->except(['index', 'show']);
+//        $this->middleware(['auth:admin-api'])->except(['index', 'show']);
 
     }
 
@@ -21,6 +21,49 @@ class ProductController extends Controller {
      */
     public function index(Request $request) {
         $productQuery = Product::query();
+
+        if ($request->has('search')) {
+            $validated = $this->validate($request, [
+                'search' => 'required|string|max:100'
+            ]);
+
+            $productQuery->where(function ($productQuery) use ($validated) {
+                $productQuery->where('title', 'like', '%' . $validated['search'] . '%')
+                    ->orWhere('title_en', 'like', '%' . $validated['search'] . '%');
+            });
+        }
+
+        if ($request->has('withCategories')) {
+            $productQuery->with(['categories']);
+        }
+
+
+        if ($request->has('sort')) {
+            $this->validate($request, [
+                'sort' => 'required|string|max:20'
+            ]);
+            $sort = $request->get('sort');
+
+            switch ($sort) {
+                case 'newest':
+                    $productQuery->orderBy('created_at', 'desc');
+                    break;
+                case 'most-wanted';
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if ($request->has('paginate')) {
+            return $productQuery->paginate($request->get('per_page') ?? 20);
+        }
+
+        return $productQuery->get();
+    }
+
+    public function activeIndex(Request $request) {
+        $productQuery = Product::query()->where('status', 1);
 
         if ($request->has('search')) {
             $validated = $this->validate($request, [
@@ -140,6 +183,15 @@ class ProductController extends Controller {
         }
 
         return $product;
+    }
+
+    public function showProduct(Request $request, Product $product) {
+        if (!$product->status) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'شما مجاز به مشاهده این اطلاعات نیستید',
+            ])->setStatusCode(403);
+        }
     }
 
     /**

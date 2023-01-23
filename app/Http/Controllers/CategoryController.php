@@ -35,6 +35,23 @@ class CategoryController extends Controller {
         return $categories->with('parent')->get();
     }
 
+    public function activeIndex(Request $request) {
+        $categories = Category::query()->where('status', 1);
+        if ($request->has('withoutChildren') && $request->get('withoutChildren') == '1') {
+            $categories->whereDoesntHave('children');
+        }
+
+        if ($request->has('root') && $request->get('root') == 1) {
+            $categories->whereDoesntHave('parent');
+        }
+
+        if ($request->has('orderByChildren')) {
+            $categories->withCount('children')->orderBy('children_count', 'desc');
+        }
+
+        return $categories->with('parent')->get();
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -99,7 +116,13 @@ class CategoryController extends Controller {
     }
 
     public function products(Request $request, Category $category) {
-        $products = $category->products();
+        if (!$category->status) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'شما مجاز به مشاهده این اطلاعات نیستید'
+            ])->setStatusCode(403);
+        }
+        $products = $category->products()->where('status', 1);
 
         if ($request->has('paginate')) {
             return $products->paginate(20);

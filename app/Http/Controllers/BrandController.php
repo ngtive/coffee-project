@@ -23,6 +23,14 @@ class BrandController extends Controller {
         return Brand::all();
     }
 
+    public function activeIndex(Request $request) {
+        $brands = Brand::where('status', 1);
+        if ($request->has('paginate')) {
+            return $brands->paginate($request->get('per_page') ?? 20);
+        }
+        return $brands->get();
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -131,7 +139,13 @@ class BrandController extends Controller {
     }
 
     public function products(Request $request, Brand $brand) {
-        $products = $brand->products();
+        if (!$brand->status) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'شما مجاز به مشاهده محصولات این برند نیستید'
+            ]);
+        }
+        $products = $brand->products()->where('status', 1);
 
         if ($request->has('sort')) {
             $this->validate($request, [

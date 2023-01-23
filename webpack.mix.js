@@ -14,4 +14,5 @@ const mix = require('laravel-mix');
 mix.js('resources/admin/app.js', 'public/js/admin')
     .vue({version: 2})
     .css('resources/css/admin.css', 'public/css')
+    .version()
     .disableNotifications();

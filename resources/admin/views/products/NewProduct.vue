@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" v-loading="loading">
         <div class="row border-bottom">
             <h2 class="col-12 text-muted">افزودن محصول</h2>
         </div>
@@ -128,6 +128,8 @@ export default {
             preview: null,
         },
         validations: {},
+
+        loading: false,
     }),
 
     methods: {
@@ -140,6 +142,7 @@ export default {
         },
 
         async formSubmit() {
+            this.loading = true;
             let formData = new FormData();
             if (this.$refs.cover.files.length > 0) {
                 formData.append('cover', this.$refs.cover.files[0]);
@@ -167,6 +170,7 @@ export default {
 
             try {
                 let result = await axios.post('/api/admin/products', formData);
+                this.loading = false;
 
                 this.$router.push({
                     name: 'products'
@@ -175,7 +179,14 @@ export default {
 
                 if (e.response.status == 422) {
                     this.validations = e.response.data.errors;
+                } else {
+                    this.$swal({
+                        title: 'مشکلی پیش آمد',
+                        icon: 'error'
+                    });
                 }
+
+                this.loading = false;
             }
         }
     }

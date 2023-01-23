@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" v-loading="loading">
         <div class="row border-bottom">
             <h2 class="col-12 text-muted">افزودن دسته بندی</h2>
         </div>
@@ -85,11 +85,13 @@ export default {
                 status: true,
             },
             validations: {},
+            loading: false,
         }
     },
 
     methods: {
         async submitCategory() {
+            this.loading = true;
             let form = new FormData();
             form.set('name', this.category.name);
             form.set('name_en', this.category.name_en);
@@ -107,6 +109,7 @@ export default {
             try {
 
                 let result = await axios.post('/api/admin/categories', form);
+                this.loading = false;
                 this.$router.push({
                     name: 'categories',
                 });
@@ -115,7 +118,14 @@ export default {
                 if (e.response && e.response.status == 422) {
                     let response = e.response.data;
                     this.validations = response.errors;
+                } else {
+                    this.$swal({
+                        title: 'مشکلی پیش آمد',
+                        icon: 'error'
+                    })
                 }
+                this.loading = false;
+
             }
         }
     },

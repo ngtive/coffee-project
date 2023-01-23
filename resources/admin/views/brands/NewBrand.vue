@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" v-loading="loading">
         <div class="row border-bottom">
             <h2 class="col-12 text-muted">افزودن برند</h2>
         </div>
@@ -96,10 +96,12 @@ export default {
                 description: null,
             },
             validations: {},
+            loading: false,
         }
     },
     methods: {
         async submit() {
+            this.loading = true;
             let form = new FormData();
             form.set('name', this.brand.name);
             form.set('name_en', this.brand.name_en);
@@ -112,6 +114,7 @@ export default {
 
             try {
                 let result = await axios.post('/api/admin/brands', form);
+                this.loading = false;
                 this.$router.push({
                     name: 'brands'
                 });
@@ -123,6 +126,8 @@ export default {
                         title: 'مشکلی پیش آمده',
                     });
                 }
+                this.loading = false;
+
             }
         }
     },

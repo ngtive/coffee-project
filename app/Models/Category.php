@@ -26,6 +26,9 @@ class Category extends Model {
 
     protected function cover(): Attribute {
         return Attribute::get(function ($cover) {
+            if (!$cover) {
+                return;
+            }
             return Storage::disk('public')->url($cover);
         });
     }

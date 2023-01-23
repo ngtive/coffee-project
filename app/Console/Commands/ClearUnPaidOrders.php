@@ -5,8 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Order;
 use Illuminate\Console\Command;
 
-class ClearUnPaidOrders extends Command
-{
+class ClearUnPaidOrders extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -26,8 +25,7 @@ class ClearUnPaidOrders extends Command
      *
      * @return int
      */
-    public function handle()
-    {
+    public function handle() {
         $orders = Order::whereNull('paid_at')->where('created_at', '<', now()->subHours())->get();
         foreach ($orders as $order) {
             foreach ($order->items as $item) {

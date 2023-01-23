@@ -5,8 +5,7 @@ namespace App\Console\Commands;
 use App\Models\CartItem;
 use Illuminate\Console\Command;
 
-class ClearCartItems extends Command
-{
+class ClearCartItems extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -26,8 +25,7 @@ class ClearCartItems extends Command
      *
      * @return int
      */
-    public function handle()
-    {
+    public function handle() {
         $cartItems = CartItem::where('created_at', '<', now()->subHours(1))->get();
 
         foreach ($cartItems as $cartItem) {

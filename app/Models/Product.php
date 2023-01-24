@@ -25,9 +25,14 @@ class Product extends Model {
         'status',
     ];
 
+    protected $with = [
+        'discount'
+    ];
+
     protected $appends = [
         'thumbs',
         'has_product_attribute',
+        'has_discount',
     ];
 
     public function brand() {
@@ -50,6 +55,9 @@ class Product extends Model {
         return $this->hasMany(ProductAttribute::class);
     }
 
+    public function discount() {
+        return $this->hasOne(Discount::class);
+    }
 
 
     public function thumbs(): Attribute {
@@ -84,6 +92,14 @@ class Product extends Model {
         return new Attribute(
             get: function () {
                 return $this->productAttributes()->exists();
+            }
+        );
+    }
+
+    public function hasDiscount(): Attribute {
+        return new Attribute(
+            get: function () {
+                return !!$this->discount;
             }
         );
     }

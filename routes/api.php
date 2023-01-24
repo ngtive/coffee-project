@@ -105,6 +105,14 @@ Route::middleware(['auth:admin-api'])->prefix('admin')->group(function () {
     Route::get('users/{user}/addresses', [\App\Http\Controllers\AddressController::class, 'showUserAddresses']);
 
 
+    /* Discounts */
+    Route::get('discounts', [\App\Http\Controllers\DiscountController::class, 'discountList'])->name('discounts');
+    Route::get('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'showDiscount']);
+    Route::patch('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'updateDiscount']);
+    Route::delete('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'deleteDiscount']);
+    Route::post('discounts/{product}', [\App\Http\Controllers\DiscountController::class, 'storeDiscount']);
+
+
 });
 
 

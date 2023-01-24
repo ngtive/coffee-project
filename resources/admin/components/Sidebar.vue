@@ -45,13 +45,25 @@
                     کاربران
                 </a>
             </router-link>
-<!--            <router-link tag="li" :to="{name: 'addresses'}" class="nav-item"
-                         active-class="active">
+            <router-link :to="{name: 'discounts'}" active-class="active" class="nav-item" tag="li">
                 <a class="nav-link" href="#">
-                    <em class="fa fa-address-book me-1"></em>
-                    آدرس ها
+                    <em class="fa fa-tag me-1"></em>
+                    تخفیف ها
                 </a>
-            </router-link>-->
+            </router-link>
+            <router-link :to="{name: 'articles'}" active-class="active" class="nav-item" tag="li">
+                <a class="nav-link" href="#">
+                    <em class="fa fa-newspaper me-1"></em>
+                    مقالات
+                </a>
+            </router-link>
+            <!--            <router-link tag="li" :to="{name: 'addresses'}" class="nav-item"
+                                     active-class="active">
+                            <a class="nav-link" href="#">
+                                <em class="fa fa-address-book me-1"></em>
+                                آدرس ها
+                            </a>
+                        </router-link>-->
         </ul>
     </nav>
 </template>

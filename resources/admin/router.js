@@ -154,6 +154,54 @@ const routes = [
         }
     },
     {
+        path: '/discounts',
+        component: require('./views/discounts/ListDiscount.vue').default,
+        name: 'discounts',
+        meta: {
+            middleware: 'auth',
+        }
+    },
+    {
+        path: '/discounts/new',
+        component: require('./views/discounts/NewDiscount.vue').default,
+        name: 'new-discount',
+        meta: {
+            middleware: 'auth'
+        }
+    },
+    {
+        path: '/discounts/:id',
+        component: require('./views/discounts/EditDiscount.vue').default,
+        name: 'edit-discount',
+        meta: {
+            middleware: 'auth'
+        }
+    },
+    {
+        path: '/articles',
+        component: require('./views/articles/ListArticle.vue').default,
+        name: 'articles',
+        meta: {
+            middleware: 'auth'
+        }
+    },
+    {
+        path: '/articles/new',
+        component: require('./views/articles/NewArticle.vue').default,
+        name: 'new-article',
+        meta: {
+            middleware: 'auth'
+        }
+    },
+    {
+        path: '/articles/:id',
+        component: require('./views/articles/EditArticle.vue').default,
+        name: 'edit-article',
+        meta: {
+            middleware: 'auth'
+        }
+    },
+    {
         path: '/login',
         component: require('./views/login').default,
         name: 'login-form',

@@ -6,11 +6,12 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\Province;
+use Carbon\Carbon;
 use GhaniniaIR\Shipping\Drivers\PishtazDriver;
 use GhaniniaIR\Shipping\Models\City;
 use GhaniniaIR\Shipping\Models\State;
-use http\Client\Curl\User;
 use Illuminate\Http\Request;
+use Morilog\Jalali\Jalalian;
 
 class OrderController extends Controller {
 
@@ -240,6 +241,33 @@ class OrderController extends Controller {
             'order' => $order->load('items'),
             'token' => '1234|' . $order->id,
             'ok' => true,
+        ]);
+    }
+
+    public function statistics(Request $request) {
+        $nowShamsi = Jalalian::now();
+        $todayOrders = Order::query()->whereBetween('created_at', [
+            Carbon::now()->startOfDay(),
+            now(),
+        ])->whereNotNull('paid_at')->count();
+
+        $thisMonthOrders = Order::query()->whereBetween(
+            'created_at',
+            [
+                (new Jalalian($nowShamsi->getYear(), $nowShamsi->getMonth(), $nowShamsi->getDay()))->toCarbon()->startOfDay(),
+                now()
+            ],
+        )->whereNotNull('paid_at')->count();
+        $thisWeekOrders = Order::query()->whereBetween('created_at', [
+            Carbon::now()->startOfWeek(Carbon::SATURDAY),
+            now(),
+        ])->whereNotNull('paid_at')->count();
+
+
+        return response()->json([
+            'today' => $todayOrders,
+            'month' => $thisMonthOrders,
+            'week' => $thisWeekOrders,
         ]);
     }
 }

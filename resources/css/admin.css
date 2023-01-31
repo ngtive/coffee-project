@@ -142,6 +142,7 @@ nav#sidebar li.nav-item.active {
     padding: 30px 20px;
     border-radius: 10px;
     background-color: white;
+    margin-bottom: 10px
 }
 
 ul.pagination {

@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->group(function () {
     Route::get('/', [\App\Http\Controllers\Auth\Admin\LoginController::class, 'adminHome']);
 });
+
+Route::get('/', function () {
+    return response()->json(['ok' => false, 'message' => 'صفحه مورد نظر پیدا نشد'])->setStatusCode(404);
+});

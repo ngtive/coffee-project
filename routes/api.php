@@ -88,6 +88,8 @@ Route::middleware(['auth:admin-api'])->prefix('admin')->group(function () {
 
     /* Orders */
     Route::get('orders', [\App\Http\Controllers\OrderController::class, 'index']);
+    Route::get('orders/stats', [\App\Http\Controllers\OrderController::class, 'statistics']);
+
     Route::get('orders/{order}', [\App\Http\Controllers\OrderController::class, 'show']);
     Route::post('orders/sent', [\App\Http\Controllers\OrderController::class, 'sent']);
     Route::post('orders/print', [\App\Http\Controllers\OrderController::class, 'print']);

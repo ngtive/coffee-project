@@ -88,6 +88,10 @@ class ProductController extends Controller {
             $productQuery->with(['categories']);
         }
 
+        if ($request->has('hasDiscount')) {
+            $productQuery->whereHas('discount');
+        }
+
 
         if ($request->has('sort')) {
             $this->validate($request, [

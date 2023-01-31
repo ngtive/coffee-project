@@ -11,6 +11,7 @@ class Order extends Model {
         'total_paid',
         'address_id',
         'discounts',
+        'discount_id',
         'tax',
         'description',
         'total_price',
@@ -40,6 +41,10 @@ class Order extends Model {
 
     public function items() {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function discount() {
+        return $this->belongsTo(Discount::class)->withTrashed();
     }
 
 

@@ -11,7 +11,7 @@ class BrandController extends Controller {
 
     public function __construct() {
 
-        $this->middleware('auth:admin-api')->except(['index', 'show', 'products']);
+        $this->middleware('auth:admin-api')->except(['index', 'show', 'products', 'activeIndex']);
     }
 
     /**

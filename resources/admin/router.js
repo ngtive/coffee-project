@@ -83,7 +83,7 @@ const routes = [
     },
     {
         path: '/orders',
-        component: require('./views/orders/OrdersList').default,
+        component: require('./views/orders/ListOrders.vue').default,
         name: 'orders',
         meta: {
             middleware: 'auth',

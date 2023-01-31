@@ -24,8 +24,11 @@
                     prop="product.title"></el-table-column>
                 <el-table-column
                     align="right"
-                    label="تخفیف"
-                    prop="discount"></el-table-column>
+                    label="تخفیف">
+                    <template slot-scope="{row}">
+                        {{ row.discount }} درصد
+                    </template>
+                </el-table-column>
                 <el-table-column
                     align="right"
                     label="تاریخ انقضا"

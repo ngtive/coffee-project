@@ -43,7 +43,7 @@ class OrderController extends Controller {
             }
         }
 
-        return $order->get();
+        return $order->paginate(20);
     }
 
     public function show(Request $request, Order $order) {

@@ -2,42 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
+use App\Models\Product;
+use App\Models\ProductSpecification;
 use Illuminate\Http\Request;
 
-class ArticleController extends Controller {
+class ProductSpecificationController extends Controller {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request) {
-        $articleQuery = Article::query();
-
-        if ($request->has('search')) {
+        if ($request->has('product_id')) {
             $validated = $this->validate($request, [
-                'search' => 'required|nullable|string'
+                'product_id' => 'exists:App\Models\Product,id',
             ]);
 
-            $articleQuery->where(function ($query) use ($validated) {
-                $query->where('title', 'like', '%' . $validated['search'] . '%')
-                    ->orWhere('title_en', 'like', '%' . $validated['search'] . '%')
-                    ->orWhere('slug', 'like', '%' . $validated['search'] . '%')
-                    ->orWhere('content', 'like', '%' . $validated['search'] . '%');
-            });
+            return Product::find($validated['product_id'])->specifications;
         }
+    }
 
-        if ($request->has('tags')) {
-//            $validated = $this->validate($request, [
-//                'tags.*' => 'required|numeric|exists:App\Models'
-//            ])
-        }
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request) {
+        $validated = $this->validate($request, [
+            'name' => 'required|string',
+            'value' => 'required|string',
+            'product_id' => 'sometimes|exists:App\Models\Product,id'
+        ]);
 
-        if ($request->has('paginate')) {
-            return $articleQuery->paginate(20);
-        }
 
-        return $articleQuery->get();
+        return ProductSpecification::create([
+            'name' => $validated['name'],
+            'value' => $validated['value'],
+            'product_id' => $validated['product_id'] ?? null,
+        ]);
     }
 
     /**
@@ -50,23 +53,13 @@ class ArticleController extends Controller {
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request) {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id) {
-        //
+    public function show(ProductSpecification $productSpecification) {
+        return $productSpecification;
     }
 
     /**

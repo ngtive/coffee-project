@@ -116,7 +116,8 @@ Route::middleware(['auth:admin-api'])->prefix('admin')->group(function () {
     Route::delete('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'deleteDiscount']);
     Route::post('discounts/{product}', [\App\Http\Controllers\DiscountController::class, 'storeDiscount']);
 
-
+    Route::resource('articles', \App\Http\Controllers\ArticleController::class);
+    Route::resource('product-specifications', \App\Http\Controllers\ProductSpecificationController::class);
 });
 
 

@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('value');
-            $table->foreignId('product_id');
+            $table->foreignId('product_id')->nullable();
             $table->timestamps();
         });
     }

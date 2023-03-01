@@ -3,9 +3,12 @@
         <div class="row border-bottom">
             <div class="col-6"><h1 class="text-muted">محصولات</h1></div>
             <div class="col-6 text-end">
-                <router-link tag="button" :to="{name: 'new-product'}" class="btn btn-success">
-                    <em class="fa fa-plus"></em>
-                </router-link>
+                <el-button size="medium"
+                           type="success"
+                           @click="$router.push({name: 'new-product'})">
+                    <em class="fa fa-plus me-1"></em>
+                    افزودن محصول
+                </el-button>
             </div>
         </div>
         <div class="row mt-4 panel" v-loading="loading">

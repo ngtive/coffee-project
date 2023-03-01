@@ -20,7 +20,7 @@ class BrandController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return Brand::paginate(20);
+        return Brand::all();
     }
 
     public function activeIndex(Request $request) {

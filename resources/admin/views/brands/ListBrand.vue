@@ -15,27 +15,27 @@
         <div v-loading="loading" class="mt-2 panel">
             <h6 class="border-bottom mb-3 pb-1">افزودن برند جدید</h6>
             <form class="border p-2 rounded col-12 row m-1" @submit.prevent="addBrand">
-                <div class="col-12 col-lg-3">
+                <div class="col-12 col-lg-3 mb-2">
                     <label class="form-label required">نام برند</label>
                     <el-input v-model="brand.name"
                               placeholder="نام فارسی مورد نمایش"
                               size="mini"></el-input>
                 </div>
-                <div class="col-12 col-lg-3">
+                <div class="col-12 col-lg-3 mb-2">
                     <label class="form-label required">نام انگلیسی برند</label>
                     <el-input v-model="brand.name_en"
                               placeholder="الزاما انگلیسی"
                               size="mini"></el-input>
                 </div>
-                <div class="col-12 col-lg-3">
+                <div class="col-12 col-lg-3 mb-2">
                     <label class="form-label required">لوگوی برند(عکس)</label>
                     <input ref="logo" class="form-control form-control-file form-control-sm" type="file">
                 </div>
-                <div class="col-12 col-lg-7">
+                <div class="col-12 col-lg-7 mb-2">
                     <label class="form-label">متن توضیحات راجب برند</label>
                     <el-input v-model="brand.description" type="textarea"></el-input>
                 </div>
-                <div class="col 21 col-lg-2 mt-2 d-flex align-items-end">
+                <div class="col-12 col-lg-2 d-lg-flex align-items-lg-end mb-2">
                     <el-button native-type="submit" size="mini" type="primary">افزودن برند</el-button>
                 </div>
             </form>

@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up() {
         Schema::create('product_galleries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id');
+            $table->foreignId('product_id')->nullable();
             $table->string('file');
             $table->timestamps();
         });

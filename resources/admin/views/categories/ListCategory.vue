@@ -54,7 +54,7 @@
                         <div>
                             <el-button native-type="submit"
                                        size="mini"
-                                       type="info">افزودن
+                                       type="primary">افزودن
                             </el-button>
                         </div>
                     </div>

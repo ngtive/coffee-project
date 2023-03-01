@@ -3,10 +3,12 @@
         <div class="row border-bottom">
             <h2 class="col-6 text-muted">تخفیف ها</h2>
             <div class="col-6 text-end">
-                <router-link :to="{name: 'new-discount'}" class="btn btn-success"
-                             tag="button">
-                    <em class="fa fa-plus"></em>
-                </router-link>
+                <el-button size="medium"
+                           type="success"
+                           @click="$router.push({name: 'new-discount'})">
+                    <em class="fa fa-plus me-1"></em>
+                    افزودن تخفیف
+                </el-button>
             </div>
         </div>
 

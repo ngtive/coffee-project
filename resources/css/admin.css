@@ -12,6 +12,24 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: "SDF";
+    src: url("/fonts/IRANSansLight.eot?");
+    src: url("/Fonts/IRANSansLight.eot?#iefix") format("embedded-opentype"), url("/Fonts/IRANSansLight.woff") format("woff"), url("/Fonts/IRANSansLight.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap
+}
+
+@font-face {
+    font-family: "SDF";
+    src: url("/Fonts/IRANSansBold.eot?");
+    src: url("/Fonts/IRANSansBold.eot?#iefix") format("embedded-opentype"), url("/Fonts/IRANSansBold.woff") format("woff"), url("/Fonts/IRANSansBold.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap
+}
+
 .yk {
     font-family: 'Yekan Bakh', 'Nunito', sans-serif;
 }
@@ -217,8 +235,15 @@ ul.pagination {
     box-shadow: none;
 }
 
-.form-label.required::after,
-.form-check-label.required::after {
+.form-label.required::before,
+.form-check-label.required::before {
     content: "*";
-    color: red
+    color: red;
+    margin-left: .1rem;
+}
+
+
+#editor {
+    font-family: 'SDF', sans-serif;
+
 }

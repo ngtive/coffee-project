@@ -37,12 +37,11 @@ return [
         ],
 
         'public' => [
-            'driver' => 's3',
-            'endpoint' => env('ENDPOINT_URL'),
-            'key' => env('ACCESS_KEY'),
-            'secret' => env('SECRET_KEY'),
-            'region' => env('DEFAULT_REGION'),
-            'bucket' => env('BUCKET_NAME'),
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'url' => env('APP_URL') . '/storage',
+            'visibility' => 'public',
+            'throw' => false,
         ],
 
         's3' => [

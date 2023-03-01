@@ -14,6 +14,8 @@ return new class extends Migration {
         Schema::create('attributes', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->boolean('is_color')->default(false);
+            $table->boolean('is_weight')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

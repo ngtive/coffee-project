@@ -8,6 +8,7 @@ const store = new Vuex.Store({
         auth: {
             authenticated: false,
             user: {},
+            categories: undefined,
             token: window.localStorage.getItem('authToken'),
         }
     },

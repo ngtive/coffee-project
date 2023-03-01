@@ -4,36 +4,34 @@
 }
 
 @font-face {
-    font-family: 'Ykan';
-    src: url("/assets/font/YEKAN BAKH FANUM 04 REGULAR.woff");
-}
-
-@font-face {
-    font-family: 'Ykan Medium';
-    src: url("/assets/font/YEKAN BAKH FANUM 05 MEDIUM.woff");
-}
-
-@font-face {
-    font-family: 'Ykan Bold';
-    src: url("/assets/font/YEKAN BAKH FANUM 06 BOLD.woff");
+    font-family: 'Yekan Bakh';
+    src: url('/fonts/yekan-bakh/Yekan Bakh EN 03 Light.woff') format('woff'),
+    url('/fonts/yekan-bakh/Yekan Bakh EN 03 Light.eot') format('embedded-opentype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
 }
 
 .yk {
-    font-family: 'Ykan', 'Nunito', sans-serif;
+    font-family: 'Yekan Bakh', 'Nunito', sans-serif;
 }
 
 .yk-m {
-    font-family: 'Ykan Medium', 'Nunito', sans-serif;
+    font-family: 'Yekan Bakh', 'Nunito', sans-serif;
 }
 
 .yk-b {
-    font-family: 'Ykan Bold', 'Nunito', sans-serif;
+    font-family: 'Yekan Bakh', 'Nunito', sans-serif;
+}
+
+.ir-sns {
+    font-family: 'IRANSans', 'Nunito', sans-serif;
 }
 
 body {
-    font-family: 'Ykan', 'Nunito', sans-serif;
+    font-family: 'Yekan Bakh', 'Nunito', sans-serif;
+    font-size: .79rem;
     background-color: #F7F5EB;
-
 }
 
 .sidebar {
@@ -217,4 +215,10 @@ ul.pagination {
 
 .btn.btn-primary:focus {
     box-shadow: none;
+}
+
+.form-label.required::after,
+.form-check-label.required::after {
+    content: "*";
+    color: red
 }

@@ -32,7 +32,16 @@ class CategoryController extends Controller {
             $categories->withCount('children')->orderBy('children_count', 'desc');
         }
 
-        return $categories->with('parent')->get();
+        $categories->with('parent');
+
+        if ($request->has('withChildren')) {
+            $categories->with('children');
+        }
+
+        if ($request->has('hideChildren')) {
+            $categories->without(['children']);
+        }
+        return $categories->get();
     }
 
     public function activeIndex(Request $request) {
@@ -81,7 +90,7 @@ class CategoryController extends Controller {
         }
 
         if ($request->has('status')) {
-            $validated['status'] = $request->status == 'true';
+            $validated['status'] = ($request->status == 'true' || $request->status == '1');
         }
 
         $cover = null;
@@ -89,14 +98,16 @@ class CategoryController extends Controller {
             $cover = Storage::disk('public')->put('category/cover', $request->file('cover'));
         }
 
-        return Category::create([
+        Category::create([
             'name' => $validated['name'],
             'name_en' => $validated['name_en'],
             'slug' => \Str::slug($validated['name_en']),
             'cover' => $cover,
             'status' => $validated['status'],
             'parent_id' => $validated['parent_id'] ?? null
-        ]);
+        ])->load(['parent', 'children']);
+
+        return $this->index($request);
 
     }
 
@@ -112,6 +123,8 @@ class CategoryController extends Controller {
         if ($request->has('withChildren')) {
             $category->load('children');
         }
+
+        $category->loadCount('products');
         return $category;
     }
 
@@ -165,11 +178,10 @@ class CategoryController extends Controller {
             $category->status = ($request->status == '1' || $request->status == 'true');
         }
 
-        if ($request->has('parent_id') && $request->parent_id != 'null') {
+        if ($request->has('parent_id') && $request->parent_id != 'null' && $request->parent_id != $category->id) {
             $this->validate($request, [
                 'parent_id' => 'required|numeric|exists:App\Models\Category,id'
             ]);
-
             $category->parent_id = $request->parent_id;
         }
 
@@ -179,6 +191,8 @@ class CategoryController extends Controller {
 
 
         $category->save();
+        $category->load(['parent', 'children']);
+        $category->loadCount('products');
         return $category;
     }
 
@@ -188,9 +202,9 @@ class CategoryController extends Controller {
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category) {
+    public function destroy(Request $request, Category $category) {
         $category->deleteOrFail();
-        return ['ok' => true];
+        return $this->index($request);
     }
 
     public function attachToProduct(Request $request, Product $product) {

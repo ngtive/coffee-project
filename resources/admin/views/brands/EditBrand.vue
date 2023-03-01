@@ -4,92 +4,80 @@
             <div class="col-6">
                 <h2 class="text-muted">ویرایش برند</h2>
             </div>
-<!--            <div class="col-6 text-end">-->
-<!--&lt;!&ndash;                <button class="btn btn-danger" @click="deleteBrand">&ndash;&gt;-->
-<!--&lt;!&ndash;                    حذف برند <em class="fa fa-trash"></em>&ndash;&gt;-->
-<!--&lt;!&ndash;                </button>&ndash;&gt;-->
-<!--            </div>-->
+            <!--            <div class="col-6 text-end">-->
+            <!--&lt;!&ndash;                <button class="btn btn-danger" @click="deleteBrand">&ndash;&gt;-->
+            <!--&lt;!&ndash;                    حذف برند <em class="fa fa-trash"></em>&ndash;&gt;-->
+            <!--&lt;!&ndash;                </button>&ndash;&gt;-->
+            <!--            </div>-->
         </div>
         <div class="row mt-4">
-            <form class="col-12 col-md-10 col-lg-9 panel" @submit.prevent="update">
+            <form class="col-12 panel" @submit.prevent="update">
                 <div class="row">
                     <div class="col-12 col-lg-3">
-                        <label for="name" class="form-label">نام فارسی برند</label>
-                    </div>
-                    <div class="col-12 col-lg-9">
-                        <input class="form-control"
-                               id="name"
-                               :class="{'is-invalid': validations.name}"
-                               type="text"
-                               v-model="brand.name">
-                        <div class="invalid-feedback" v-if="validations.name">
+                        <label class="form-label required">نام فارسی</label>
+                        <el-input v-model="brand.name"
+                                  placeholder="نام فارسی برند"
+                                  size="mini"></el-input>
+                        <span v-if="validations.name"
+                              class="text-danger">
                             {{ validations.name[0] }}
-                        </div>
+                        </span>
                     </div>
-                </div>
-
-                <div class="row mt-3">
                     <div class="col-12 col-lg-3">
-                        <label for="name_en" class="form-label">نام انگلیسی برند</label>
-                    </div>
-
-                    <div class="col-12 col-lg-9">
-                        <input class="form-control"
-                               id="name_en"
-                               :class="{'is-invalid': validations.name_en}"
-                               type="text"
-                               v-model="brand.name_en">
-                        <div class="invalid-feedback" v-if="validations.name_en">
+                        <label class="form-label required">نام انگلیسی</label>
+                        <el-input v-model="brand.name_en" placeholder="نام انگلیسی برند"
+                                  size="mini"></el-input>
+                        <span v-if="validations.name_en"
+                              class="text-danger">
                             {{ validations.name_en[0] }}
-                        </div>
+                        </span>
                     </div>
-                </div>
-                <div class="row mt-3">
                     <div class="col-12 col-lg-3">
-                        <label for="logo" class="form-label">لگوی برند</label>
-                    </div>
-                    <div class="col-12 col-lg-9">
-                        <input class="form-control"
-                               id="logo"
-                               :class="{'is-invalid': validations.logo}"
-                               type="file"
-                               ref="logo">
-                        <div class="invalid-feedback" v-if="validations.logo">
+                        <label class="form-label required">لوگو</label>
+                        <input ref="logo"
+                               class="form-control form-control-file form-control-sm"
+                               type="file">
+                        <div v-if="validations.logo"
+                             class="text-danger">
                             {{ validations.logo[0] }}
                         </div>
                     </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12 col-lg-3">
-                        <label for="description">
-                            توضیحات مورد نمایش
-                        </label>
+                    <div class="col-12 col-lg-4">
+                        <label class="form-label">توضیحات</label>
+                        <el-input v-model="brand.description"
+                                  placeholder="توضیحات"
+                                  type="textarea"></el-input>
+                        <span v-if="validations.description" class="text-danger">
+                            {{ validations.description[0] }}
+                        </span>
                     </div>
-                    <div class="col-12 col-lg-9">
-                        <textarea class="form-control"
-                                  id="description"
-                                  :class="{'is-invalid': validations.description}"
-                                  v-model="brand.description"></textarea>
-                    </div>
-                </div>
-                <div class="row mt-4">
-                    <div class="col-12 offset-lg-3">
-                        <label class="form-label" for="status">وضعیت نمایش
-                            <input class="form-check-inline ms-2"
-                                   type="checkbox"
-                                   id="status"
-                                   v-model="brand.status">
+                    <div class="col-12 col-lg-3 d-flex align-items-end">
+                        <label class="form-check-label">
+                            قابل نمایش
+                            <el-checkbox v-model="brand.status" :checked="!!brand.status"></el-checkbox>
                         </label>
                     </div>
                 </div>
+
                 <div class="row mt-2">
                     <div class="col-12">
-                        <button class="btn btn-primary" type="submit">ویرایش</button>
+                        <el-button native-type="submit" size="mini" type="primary">ویرایش</el-button>
                     </div>
                 </div>
             </form>
-            <div class="col-12">
-                <img :src="brand.logo" alt="brand logo" width="500" height="500">
+            <div class="col-12 panel border">
+                <div class="row">
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <h6 class="text-muted border-bottom pb-1 mb-3">فایل لوگوی فعلی</h6>
+                            <img :src="brand.logo" alt="brand logo" class="border" height="500" width="500">
+                        </div>
+                        <div class="col-12 col-lg-6 text-center">
+                            <h6 class="text-muted border-bottom pb-1 mb-3 text-start">فایل کوچک شده لوگو</h6>
+                            <img :src="brand.thumb" alt="brand logo" class="border">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -117,8 +105,10 @@ export default {
                 form.set('logo', this.$refs.logo.files[0]);
             }
 
+            if (this.brand.description) {
+                form.set('description', this.brand.description);
+            }
             form.set('status', this.brand.status);
-            form.set('description', this.brand.description);
 
 
             form.set('_method', 'patch');
@@ -142,7 +132,8 @@ export default {
             }
 
         },
-        deleteBrand() {},
+        deleteBrand() {
+        },
     },
 
     async beforeRouteEnter(to, from, next) {
@@ -152,7 +143,7 @@ export default {
             next();
 
         } catch (e) {
-            next( vm => {
+            next(vm => {
                 vm.$swal({
                     title: 'مشکلی پیش آمد'
                 });

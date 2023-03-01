@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Attribute;
 use App\Models\AttributeValue;
-use App\Models\Product;
 use App\Models\ProductAttribute;
 use Illuminate\Http\Request;
 
@@ -15,15 +14,6 @@ class ProductAttributeController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create() {
         //
     }
 
@@ -71,6 +61,13 @@ class ProductAttributeController extends Controller {
             'weight' => 'required|numeric',
         ]);
 
+        if ($request->has('product_id')) {
+            $this->validate($request, [
+                'product_id' => 'required|numeric|exists:App\Models\Product,id'
+            ]);
+            $validated['product_id'] = $request->get('product_id');
+        }
+
         $productAttribute->updateOrFail($validated);
         return $productAttribute;
     }
@@ -89,9 +86,25 @@ class ProductAttributeController extends Controller {
 
     public function storeAttribute(Request $request) {
         $validated = $this->validate($request, [
-            'name' => 'required|string|max:50'
+            'name' => 'required|string|max:50',
+            'is_color' => 'required|boolean',
+            'is_weight' => 'required|boolean',
         ]);
-        return Attribute::create(['name' => $validated['name']]);
+        $attribute = [
+            'name' => $validated['name'],
+            'is_color' => $validated['is_color'],
+            'is_weight' => $validated['is_weight'],
+        ];
+        return Attribute::create($attribute);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create() {
+        //
     }
 
     public function indexAttribute(Request $request) {
@@ -99,12 +112,15 @@ class ProductAttributeController extends Controller {
     }
 
     public function showAttribute(Request $request, Attribute $attribute) {
-        return $attribute->load('values');
+        $attribute->load('values');
+        return $attribute;
     }
 
     public function storeAttributeValue(Request $request, Attribute $attribute) {
         $validated = $this->validate($request, [
-            'value' => 'required|string'
+            'value' => 'required',
+            'is_color' => 'required|boolean',
+            'is_weight' => 'required|boolean',
         ]);
         return $attribute->values()->create($validated);
     }
@@ -117,30 +133,29 @@ class ProductAttributeController extends Controller {
         return $value->deleteOrFail();
     }
 
-    public function storeProductAttribute(Request $request, Product $product) {
+    public function storeProductAttribute(Request $request) {
         $validated = $this->validate($request, [
             'quantity' => 'required|numeric',
             'amount' => 'required|numeric',
             'weight' => 'required|numeric',
-            'values.*' => 'required|numeric|exists:App\Models\AttributeValue,id'
         ]);
 
         if ($request->has('weight')) {
-            $this->validate($request, [
-                'weight' => 'required|numeric',
-            ]);
             $validated['weight'] = $request->get('weight');
-        } else {
-            $validated['weight'] = $product->weight;
         }
 
-        $productAttribute = $product->productAttributes()->create([
+        $productAttribute = ProductAttribute::create([
             'quantity' => $validated['quantity'],
             'amount' => $validated['amount'],
             'weight' => $validated['weight']
         ]);
 
-        $productAttribute->attributeValues()->attach($validated['values']);
-        return $productAttribute->load('attributeValues.attribute');
+        if ($request->has('values')) {
+            $productAttribute->attributeValues()->detach();
+            $productAttribute->attributeValues()->attach($request->get('values'));
+        }
+
+        $productAttribute->load('attributeValues.attribute');
+        return $productAttribute;
     }
 }

@@ -310,4 +310,33 @@ class ProductController extends Controller {
         $product->saveOrFail();
         return $product;
     }
+
+    public function uploadCover(Request $request) {
+        $validated = $this->validate($request, [
+            'cover' => 'required|file|mimes:jpg,png,jpeg,webp'
+        ]);
+        $coverFile = $request->file('cover');
+        $coverHash = \Str::random(18);
+
+        $thumbs = [
+            '100' => Image::make($request->file('cover'))->resize(100, 100),
+            '200' => Image::make($request->file('cover'))->resize(200, 200),
+            '300' => Image::make($request->file('cover'))->resize(300, 300),
+            '400' => Image::make($request->file('cover'))->resize(400, 400),
+            '500' => Image::make($request->file('cover'))->resize(500, 500)
+        ];
+        foreach ($thumbs as $key => $thumb) {
+            Storage::disk('public')->put(
+                'products/' . $coverHash . '/' . $key . '.' . $coverFile->guessExtension(),
+                (string)$thumb->encode()
+            );
+        }
+
+        $coverPath = Storage::disk('public')->putFileAs('products/' . $coverHash, $coverFile, 'original.' . $coverFile->guessExtension());
+
+        return [
+            'ok' => true,
+            'cover' => $coverPath,
+        ];
+    }
 }

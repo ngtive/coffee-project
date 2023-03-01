@@ -61,6 +61,7 @@ Route::middleware(['auth:admin-api'])->prefix('admin')->group(function () {
     Route::get('logout', [\App\Http\Controllers\Auth\Admin\LoginController::class, 'logout']);
 
     /* Products */
+    Route::post('products/cover', [\App\Http\Controllers\ProductController::class, 'uploadCover']);
     Route::resource('products', \App\Http\Controllers\ProductController::class);
     Route::post('products/{product}/brand', [\App\Http\Controllers\ProductController::class, 'addBrand']);
     Route::delete('products/{product}/brand', [\App\Http\Controllers\ProductController::class, 'deleteBrand']);
@@ -72,6 +73,7 @@ Route::middleware(['auth:admin-api'])->prefix('admin')->group(function () {
 
 
     /* Store, update, delete ProductAttribute */
+    Route::post('product_attributes', [\App\Http\Controllers\ProductAttributeController::class, 'storeProductAttribute']);
     Route::post('products/{product}/product_attribute', [\App\Http\Controllers\ProductAttributeController::class, 'storeProductAttribute']);
     Route::delete('productAttributes/{productAttribute}', [\App\Http\Controllers\ProductAttributeController::class, 'destroy']);
     Route::patch('productAttributes/{productAttribute}', [\App\Http\Controllers\ProductAttributeController::class, 'update']);

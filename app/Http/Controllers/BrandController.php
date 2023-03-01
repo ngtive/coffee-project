@@ -20,7 +20,7 @@ class BrandController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return Brand::all();
+        return Brand::paginate(20);
     }
 
     public function activeIndex(Request $request) {
@@ -58,17 +58,26 @@ class BrandController extends Controller {
         if ($request->has('status')) {
             $validated['status'] = ($request->status == '1' || $request->status == 'true');
         }
-        $logo = Image::make($request->file('logo'))->resize(500, 500);
+        $logo = Image::make($request->file('logo'))->resize(500, null, function ($constraint) {
+            $constraint->aspectRatio();
+        });
 
         $logoHash = $request->file('logo')->hashName();
+
+
         Storage::disk('public')->put('brands/cover/' . $logoHash, ((string)$logo->encode()));
+        Storage::disk('public')->put('brands/cover/thumb/' . $logoHash,
+            (string)Image::make($request->file('logo'))->resize(200, null, function ($cons) {
+                $cons->aspectRatio();
+            })->encode()
+        );
 
 
         return Brand::create([
             'name' => $validated['name'],
             'name_en' => $validated['name_en'],
             'slug' => \Str::slug($validated['name_en']),
-            'logo' => 'brands/cover/' . $logoHash,
+            'logo' => $logoHash,
             'status' => $validated['status'],
             'description' => $validated['description'],
         ]);
@@ -106,23 +115,34 @@ class BrandController extends Controller {
             'name' => 'required|string',
             'name_en' => 'required|string',
             'status' => 'required|string',
-            'description' => 'required|string',
+            'description' => 'sometimes|string',
         ]);
 
         if ($request->hasFile('logo')) {
             $this->validate($request, [
                 'logo' => 'required|file|mimes:jpg,jpeg,png'
             ]);
-            $logo = Image::make($request->file('logo'))->resize(500, 500);
+            $logo = Image::make($request->file('logo'))->resize(500, null, function ($const) {
+                $const->aspectRatio();
+            });
             $logoHash = $request->file('logo')->hashName();
+
+
             Storage::disk('public')->put('brands/cover/' . $logoHash, ((string)$logo->encode()));
-            $brand->logo = 'brands/cover/' . $logoHash;
+            Storage::disk('public')->put('brands/cover/thumb/' . $logoHash, (string)Image::make(
+                $request->file('logo')
+            )->resize(200, null, function ($const) {
+                $const->aspectRatio();
+            })->encode());
+
+
+            $brand->logo = $logoHash;
         }
 
         $brand->name = $validated['name'];
         $brand->name_en = $validated['name_en'];
         $brand->status = ($validated['status'] == '1' || $validated['status'] == 'true');
-        $brand->description = $validated['description'];
+        $brand->description = $validated['description'] ?? null;
 
         $brand->save();
         return $brand;

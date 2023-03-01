@@ -4,71 +4,84 @@
             <h2 class="col-12 text-muted">ویرایش دسته بندی</h2>
         </div>
         <div class="row mt-2">
-            <form class="col-12 col-md-8 panel" @submit.prevent="submit">
+            <form class="col-12 panel" @submit.prevent="submit">
+                <!--                <div class="mb-5">-->
+                <!--                    <h6 class="text-muted border-bottom mb-3 pb-2">-->
+                <!--                        تعداد محصولات وصل شده به دسته بندی: {{ category.products_count }}-->
+                <!--                    </h6>-->
+                <!--                    <div class="border-bottom pb-2">-->
+                <!--                        <div class="row">-->
+                <!--                            <div class="col-6 col-lg-2">-->
+                <!--                                دسته بندی های زیر مجموعه-->
+                <!--                            </div>-->
+                <!--                            <div class="col-6 col-lg-3 text-start">-->
+                <!--                                <el-tag size="mini" type="info" v-for="child in category.children" :key="child.id" @click="$router.push({name: 'edit-category', params: {id: child.id}})">-->
+                <!--                                    {{ child.name }}-->
+                <!--                                </el-tag>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                    <div class="border-bottom pb-2 ">-->
+                <!--                        <h6 class="text-muted">دسته بندی پدر</h6>-->
+                <!--                    </div>-->
+                <!--                </div>-->
                 <div class="row">
-                    <div class="col-12 col-md-3">
-                        <label class="form-label" for="name">نام دسته بندی (فارسی)</label>
+                    <div class="col-12 col-md-3 mb-3">
+                        <label class="form-label" for="name">نام فارسی</label>
+                        <el-input v-model="category.name"
+                                  placeholder="نام فارسی"
+                                  size="mini" type="text"></el-input>
                     </div>
-                    <div class="col-12 col-md-9">
-                        <input class="form-control"
-                               :class="{'is-invalid': !!validations.name}"
-                               v-model="category.name">
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-3 mb-3">
                         <label class="form-label" for="name_en">نام دسته بندی (انگلیسی)</label>
+                        <el-input v-model="category.name_en"
+                                  placeholder="نام انگلیسی"
+                                  size="mini"
+                                  type="text"></el-input>
                     </div>
-                    <div class="col-12 col-md-9">
-                        <input class="form-control"
-                               v-model="category.name_en"
-                               :class="{'is-invalid': !!validations.name_en}">
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-12 col-md-3">
+                    <div class="col-12 col-md-3 mb-3">
                         <label class="form-label" for="cover">کاور دسته بندی</label>
-                    </div>
-                    <div class="col-12 col-md-9">
-                        <input class="form-control"
+                        <input ref="cover"
                                type="file"
-                               ref="cover"
-                               :class="{'is-invalid': !!validations.cover}">
+                               class="form-control form-control-sm">
+                    </div>
+                    <div class="col-12 col-md-3 mb-3">
+                        <label class="form-label d-block">زیر مجموعه</label>
+                        <el-select v-model="category.parent_id"
+                                   placeholder="زیر مجموعه"
+                                   size="mini">
+                            <el-option
+                                v-for="c in categories"
+                                :key="c.id"
+                                :disabled="c.id == category.id"
+                                :label="c.name"
+                                :value="c.id"></el-option>
+                        </el-select>
                     </div>
                 </div>
+                <div class="row mt-2">
+                    <div class="col-12 col-md-3">
+                        <label class="form-label">وضعیت نمایش
+                            <el-checkbox
+                                v-model="category.status"></el-checkbox>
+                        </label>
+                    </div>
+                    <div class="col-12 col-md-9">
 
-                <div class="row mt-2">
-                    <div class="col-12 col-md-3">
-                        <label class="form-label" for="parent">زیر مجموعه</label>
-                    </div>
-                    <div class="col-12 col-md-9">
-                        <select v-model="category.parent_id" class="form-control">
-                            <option value="" :selected="!category.parent_id"></option>
-                            <option v-for="c in categories" :key="c.id" :value="c.id" :selected="category.parent_id == c.id" :disabled="category.id == c.id">
-                                {{ c.name }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-12 col-md-3">
-                        <label class="form-label">وضعیت نمایش</label>
-                    </div>
-                    <div class="col-12 col-md-9">
-                        <input class="form-check"
-                               type="checkbox"
-                               v-model="category.status">
                     </div>
                 </div>
                 <div class="row mt-4">
-                    <div class="col-3 offset-md-3">
+                    <div class="col-6">
                         <button type="submit" class="btn btn-primary">ویرایش</button>
+                    </div>
+                    <div v-if="category.cover" class="col-6">
+                        <h6 class="text-center border-bottom pb-1">کاور دسته بندی</h6>
+                        <div class="border p-1 rounded">
+                            <img :src="category.cover" alt="Cover" class="w-100">
+                        </div>
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="row mt-2">
-            <div><img :src="category.cover" alt="Cover" width="500" height="500"></div>
         </div>
     </div>
 </template>
@@ -119,14 +132,30 @@ export default {
 
     async beforeRouteEnter(to, from, next) {
         try {
-            let result = await axios.get('/api/admin/categories/' + to.params.id);
-            store.state.category = result.data;
+            let category = await axios.get('/api/admin/categories/' + to.params.id);
+            category = category.data;
+            category.status = (category.status == 1 || category.status == true);
+            store.state.category = category;
 
             let categories = await axios.get('/api/admin/categories');
-            store.state.categories = categories.data;
+            categories = categories.data;
+
+            function recursiveAdd(category) {
+                category.label = category.name;
+                category.value = category.id;
+
+                if (category.children) {
+                    category.children.forEach(i => recursiveAdd(i));
+                    return;
+                }
+            }
+
+            categories.forEach(i => recursiveAdd(i));
+            store.state.categories = categories;
 
             next();
         } catch (e) {
+            console.error(e);
             next(vm => {
                 vm.$swal({
                     title: 'مشکلی پیش آمد'

@@ -13,7 +13,12 @@ class Brand extends Model {
         'slug',
         'description',
         'logo',
+        'thumb',
         'status',
+    ];
+
+    protected $appends = [
+        'thumb'
     ];
 
     public function products() {
@@ -22,7 +27,13 @@ class Brand extends Model {
 
     protected function logo(): Attribute {
         return Attribute::get(function ($logo) {
-            return \Storage::disk('public')->url($logo);
+            return \Storage::disk('public')->url('brands/cover/' . $logo);
+        });
+    }
+
+    protected function thumb(): Attribute {
+        return Attribute::get(function () {
+            return \Storage::disk('public')->url('brands/cover/thumb/' . $this->original['logo']);
         });
     }
 }

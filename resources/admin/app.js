@@ -7,8 +7,7 @@
 import './bootstrap';
 import langFa from 'element-ui/lib/locale/lang/fa';
 import locale from 'element-ui/lib/locale';
-import Element from 'element-ui';
-import {Loading} from 'element-ui';
+import Element, {Loading} from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
 import router from './router';
@@ -16,7 +15,6 @@ import VueRouter from 'vue-router';
 import Vue from 'vue';
 import store from "./store";
 import VueSweetalert2 from 'vue-sweetalert2';
-import VueApexCharts from 'vue-apexcharts';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
 
@@ -56,38 +54,38 @@ Vue.mixin({
     },
 });
 
-Vue.directive('loading', {
-    inserted: (el, binding) => {
-        if (binding.name == 'loading' && binding.value == true) {
-            $(el).addClass('directive-loading-parent');
-            $(el).append("<div class=\"directive-loading-wrapper\">\n" +
-                "        <div class=\"d-flex justify-content-center h-100 position-relative\">\n" +
-                "            <div class=\"spinner-border\" role=\"status\">\n" +
-                "                <span class=\"visually-hidden\">Loading...</span>\n" +
-                "            </div>\n" +
-                "        </div>\n" +
-                "    </div>");
-        } else if (binding.name == 'loading' && binding.value == false) {
-            $(el).addClass('directive-loading-parent');
-            $(el).append("<div class=\"directive-loading-wrapper\" style='display: none'>\n" +
-                "        <div class=\"d-flex justify-content-center h-100 position-relative\">\n" +
-                "            <div class=\"spinner-border\" role=\"status\">\n" +
-                "                <span class=\"visually-hidden\">Loading...</span>\n" +
-                "            </div>\n" +
-                "        </div>\n" +
-                "    </div>");
-        }
-    },
-    update: (el, binding) => {
-        if (binding.name == 'loading') {
-            if (binding.value == false) {
-                $(el).children('.directive-loading-wrapper').hide();
-            } else if (binding.value == true) {
-                $(el).children('.directive-loading-wrapper').show();
-            }
-        }
-    }
-})
+// Vue.directive('loading', {
+//     inserted: (el, binding) => {
+//         if (binding.name == 'loading' && binding.value == true) {
+//             $(el).addClass('directive-loading-parent');
+//             $(el).append("<div class=\"directive-loading-wrapper\">\n" +
+//                 "        <div class=\"d-flex justify-content-center h-100 position-relative\">\n" +
+//                 "            <div class=\"spinner-border\" role=\"status\">\n" +
+//                 "                <span class=\"visually-hidden\">Loading...</span>\n" +
+//                 "            </div>\n" +
+//                 "        </div>\n" +
+//                 "    </div>");
+//         } else if (binding.name == 'loading' && binding.value == false) {
+//             $(el).addClass('directive-loading-parent');
+//             $(el).append("<div class=\"directive-loading-wrapper\" style='display: none'>\n" +
+//                 "        <div class=\"d-flex justify-content-center h-100 position-relative\">\n" +
+//                 "            <div class=\"spinner-border\" role=\"status\">\n" +
+//                 "                <span class=\"visually-hidden\">Loading...</span>\n" +
+//                 "            </div>\n" +
+//                 "        </div>\n" +
+//                 "    </div>");
+//         }
+//     },
+//     update: (el, binding) => {
+//         if (binding.name == 'loading') {
+//             if (binding.value == false) {
+//                 $(el).children('.directive-loading-wrapper').hide();
+//             } else if (binding.value == true) {
+//                 $(el).children('.directive-loading-wrapper').show();
+//             }
+//         }
+//     }
+// })
 
 
 router.beforeEach((to, from, next) => {

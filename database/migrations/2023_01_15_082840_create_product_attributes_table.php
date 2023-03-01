@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->integer('quantity');
             $table->integer('amount');
             $table->integer('weight');
-            $table->foreignId('product_id');
+            $table->foreignId('product_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

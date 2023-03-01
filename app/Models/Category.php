@@ -20,6 +20,13 @@ class Category extends Model {
         'cover'
     ];
 
+
+    protected $with = ['children'];
+
+    protected $appends = [
+        'selected'
+    ];
+
     public function products() {
         return $this->belongsToMany(Product::class, 'category_product');
     }
@@ -32,4 +39,11 @@ class Category extends Model {
             return Storage::disk('public')->url($cover);
         });
     }
+
+    protected function selected(): Attribute {
+        return Attribute::get(function () {
+            return false;
+        });
+    }
+
 }

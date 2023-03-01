@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Admin;
+use App\Models\Attribute;
 use App\Models\Province;
 use GhaniniaIR\Shipping\Core\Services\LocationService;
 use Illuminate\Database\Seeder;
@@ -44,5 +45,38 @@ class DatabaseSeeder extends Seeder {
                 ]);
             }
         }
+
+        $weight = Attribute::create([
+            'name' => 'وزن',
+            'is_color' => false,
+            'is_weight' => true,
+        ]);
+        $color = Attribute::create([
+            'name' => 'رنگ',
+            'is_color' => true,
+            'is_weight' => false
+        ]);
+        $roast = Attribute::create([
+            'name' => 'رست',
+        ]);
+        for ($i = 50; $i <= 2000; $i += 50) {
+            $weight->values()->create([
+                'value' => $i . ' گرمی'
+            ]);
+        }
+        $roast->values()->createMany([
+            [
+                'value' => 'لایت',
+            ],
+            [
+                'value' => 'مدیوم',
+            ],
+            [
+                'value' => 'دارک',
+            ],
+            [
+                'value' => 'خیلی دارک',
+            ]
+        ]);
     }
 }

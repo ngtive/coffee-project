@@ -13,8 +13,8 @@ return new class extends Migration {
     public function up() {
         Schema::create('discounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id');
             $table->integer('discount');
+            $table->foreignId('product_id')->nullable();
             $table->timestamp('expire_at')->nullable();
             $table->softDeletes();
             $table->timestamps();

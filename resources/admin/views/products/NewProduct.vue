@@ -304,7 +304,7 @@
                         <div class="row">
                             <h6 class="border-bottom pb-1 mb-3">مشخصات تکمیلی</h6>
 
-                            <div class="col-12 col-lg-5 mb-3">
+                            <div class="col-12 col-lg-6 mb-3">
                                 <div class="border rounded p-2 mt-2"
                                      style="border-style: dashed !important;">
                                     <form v-loading="product.specification.loading" class="row"
@@ -347,13 +347,19 @@
                                     </form>
                                 </div>
                             </div>
-                            <div class="col-12 col-lg-7 mb-3 text-end">
+                            <div class="col-12 col-lg-6 mb-3 text-end">
                                 <div class="d-flex flex-column gap-1">
                                     <div v-for="specification in product.specifications"
                                          :key="specification.id"
-                                         class="d-flex justify-content-between px-3 border rounded">
-                                        <span>{{ specification.name }}</span>
-                                        <span>{{ specification.value }}</span>
+                                         class="d-flex justify-content-between p-1 border rounded">
+                                        <span class="fs-4">{{ specification.name }}</span>
+                                        <span class="fs-6">{{ specification.value }}</span>
+                                        <span class="text-end">
+                                            <el-button size="mini"
+                                                       type="danger">
+                                                <el-icon name="delete"></el-icon>
+                                            </el-button>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -652,7 +658,6 @@ export default {
 
             axios.post('/api/admin/product-specifications', params)
                 .then((result) => {
-
                     this.product.specifications.push(result.data);
                     this.product.specification = {
                         name: undefined,
@@ -668,6 +673,18 @@ export default {
                     this.product.specification.loading = false;
                 });
 
+        },
+        deleteSpecification(specification) {
+            this.product.specifications = this.product.specifications.filter(i => i.id != specification.id);
+
+            axios.delete('/api/admin/product-specifications/' + specification.id)
+                .then((result) => {
+                    this.$notify({
+                        title: 'حذف مشخصه',
+                        type: 'success',
+                        message: 'مشخصه حذف شد.',
+                    });
+                });
         }
     },
 

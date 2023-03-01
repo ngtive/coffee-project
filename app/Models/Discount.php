@@ -32,6 +32,9 @@ class Discount extends Model {
     protected function expireAt(): \Illuminate\Database\Eloquent\Casts\Attribute {
         return new \Illuminate\Database\Eloquent\Casts\Attribute(
             get: function ($expire_at) {
+                if (!$expire_at) {
+                    return;
+                }
                 return Jalalian::forge($expire_at)->ago();
             }
         );
@@ -41,6 +44,9 @@ class Discount extends Model {
     protected function expire(): \Illuminate\Database\Eloquent\Casts\Attribute {
         return new \Illuminate\Database\Eloquent\Casts\Attribute(
             get: function () {
+                if (!$this->original['expire_at']) {
+                    return;
+                }
                 return '' . ceil(now()->floatDiffInHours(
                         (new Carbon($this->original['expire_at'])),
                         false
@@ -51,6 +57,9 @@ class Discount extends Model {
 
     protected function isExpired(): \Illuminate\Database\Eloquent\Casts\Attribute {
         return \Illuminate\Database\Eloquent\Casts\Attribute::get(function () {
+            if (!$this->original['expire_at']) {
+                return;
+            }
             return (new Carbon($this->original['expire_at']))->isPast();
         });
     }

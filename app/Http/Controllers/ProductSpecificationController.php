@@ -79,8 +79,16 @@ class ProductSpecificationController extends Controller {
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id) {
-        //
+    public function update(Request $request, ProductSpecification $productSpecification) {
+
+        $validated = $this->validate($request, [
+            'name' => 'sometimes|string',
+            'value' => 'sometimes|string',
+            'product_id' => 'sometimes|numeric|exists:App\Models\Product,id',
+        ]);
+
+        $productSpecification->updateOrFail($validated);
+        return $productSpecification;
     }
 
     /**

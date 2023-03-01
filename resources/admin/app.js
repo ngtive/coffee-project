@@ -54,44 +54,11 @@ Vue.mixin({
     },
 });
 
-// Vue.directive('loading', {
-//     inserted: (el, binding) => {
-//         if (binding.name == 'loading' && binding.value == true) {
-//             $(el).addClass('directive-loading-parent');
-//             $(el).append("<div class=\"directive-loading-wrapper\">\n" +
-//                 "        <div class=\"d-flex justify-content-center h-100 position-relative\">\n" +
-//                 "            <div class=\"spinner-border\" role=\"status\">\n" +
-//                 "                <span class=\"visually-hidden\">Loading...</span>\n" +
-//                 "            </div>\n" +
-//                 "        </div>\n" +
-//                 "    </div>");
-//         } else if (binding.name == 'loading' && binding.value == false) {
-//             $(el).addClass('directive-loading-parent');
-//             $(el).append("<div class=\"directive-loading-wrapper\" style='display: none'>\n" +
-//                 "        <div class=\"d-flex justify-content-center h-100 position-relative\">\n" +
-//                 "            <div class=\"spinner-border\" role=\"status\">\n" +
-//                 "                <span class=\"visually-hidden\">Loading...</span>\n" +
-//                 "            </div>\n" +
-//                 "        </div>\n" +
-//                 "    </div>");
-//         }
-//     },
-//     update: (el, binding) => {
-//         if (binding.name == 'loading') {
-//             if (binding.value == false) {
-//                 $(el).children('.directive-loading-wrapper').hide();
-//             } else if (binding.value == true) {
-//                 $(el).children('.directive-loading-wrapper').show();
-//             }
-//         }
-//     }
-// })
-
-
 router.beforeEach((to, from, next) => {
     let loadingInstance = Loading.service();
     store.state.loading = loadingInstance;
-    // store.state.loading = true;
+
+
     if (to.meta.middleware == 'guest') {
         if (store.state.auth.authenticated) {
             next({name: 'dashboard'});
@@ -125,20 +92,17 @@ const app = new Vue({
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
     }
-})
+});
 
 
 const token = store.state.auth.token;
 window.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
 if (token) {
-    axios.get('/api/admin').then((result) => {
+    window.axios.get('/api/admin').then((result) => {
         const admin = result.data;
         store.state.auth.authenticated = true;
         store.state.auth.user = admin;
-        router.push({
-            name: 'dashboard'
-        });
     });
 }
 
@@ -158,6 +122,12 @@ if (token) {
 //     app.stopLoading();
 //     return Promise.reject(err);
 // })
+
+window.axios.interceptors.response.use((response) => {
+    return response;
+}, reason => {
+
+})
 window.Vue = Vue;
 window.router = router;
 window.store = store;

@@ -5,24 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use Intervention\Image\Facades\Image;
 
 class BrandController extends Controller {
-
     public function __construct() {
 
-        $this->middleware('auth:admin-api')->except(['index', 'show', 'products', 'activeIndex']);
+        $this->middleware('auth:admin')->except(['products', 'activeIndex']);
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index() {
-        return Brand::all();
+        return Inertia::render('Admin/brands/ListBrand', [
+            'brands' => Brand::paginate(24),
+        ]);
     }
-
     public function activeIndex(Request $request) {
         $brands = Brand::where('status', 1);
         if ($request->has('paginate')) {
@@ -30,22 +25,10 @@ class BrandController extends Controller {
         }
         return $brands->get();
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create() {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request) {
         $validated = $this->validate($request, [
             'name' => 'required|string',
@@ -73,7 +56,7 @@ class BrandController extends Controller {
         );
 
 
-        return Brand::create([
+        Brand::create([
             'name' => $validated['name'],
             'name_en' => $validated['name_en'],
             'slug' => \Str::slug($validated['name_en']),
@@ -81,35 +64,16 @@ class BrandController extends Controller {
             'status' => $validated['status'],
             'description' => $validated['description'],
         ]);
+        return $this->index();
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(Brand $brand) {
-        return $brand;
+        return Inertia::render('Admin/brands/EditBrand', [
+            'brand' => $brand,
+        ]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id) {
         //
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Brand $brand) {
         $validated = $this->validate($request, [
             'name' => 'required|string',
@@ -145,19 +109,14 @@ class BrandController extends Controller {
         $brand->description = $validated['description'] ?? null;
 
         $brand->save();
-        return $brand;
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
+        return Inertia::render('Admin/brands/EditBrand', [
+            'brand' => $brand,
+        ]);
+    }
     public function destroy($id) {
         //
     }
-
     public function products(Request $request, Brand $brand) {
         if (!$brand->status) {
             return response()->json([

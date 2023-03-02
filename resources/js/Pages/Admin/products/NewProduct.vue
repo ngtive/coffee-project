@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div v-loading="loading" class="container">
         <div class="row border-bottom">
             <h2 class="col-12 text-muted">افزودن محصول</h2>
         </div>
@@ -375,16 +375,14 @@
 </template>
 
 <script>
-import {useForm} from "@inertiajs/vue2";
-
 export default {
     name: "NewProduct",
     data: () => ({
-        /*attributes: store.state.attributes,
+        attributes: store.state.attributes,
         categories: store.state.categories,
-        brands: store.state.brands,*/
+        brands: store.state.brands,
 
-        product: useForm({
+        product: {
             title: undefined,
             title_en: undefined,
             price: undefined,
@@ -394,25 +392,22 @@ export default {
             quantity: undefined,
             category: undefined,
             brand: undefined,
-            cover: undefined,
             product_attributes: [],
             specifications: [],
-
-        }),
-
-        specification: {
-            name: undefined,
-            value: undefined,
-            validations: {},
-            loading: false,
-        },
-        product_attribute: {
-            weight: undefined,
-            amount: undefined,
-            quantity: undefined,
-            values: [],
-            validation: {},
-            loading: false,
+            specification: {
+                name: undefined,
+                value: undefined,
+                validations: {},
+                loading: false,
+            },
+            product_attribute: {
+                weight: undefined,
+                amount: undefined,
+                quantity: undefined,
+                values: [],
+                validation: {},
+                loading: false,
+            },
         },
         cover: {
             preview: null,
@@ -428,12 +423,6 @@ export default {
         dragText: '<em class="fa fa-plus text-muted"></em>',
         dragging: false,
     }),
-
-    props: {
-        attributes: Array,
-        categories: Array,
-        brands: Array,
-    },
 
     methods: {
         onClickCover(event) {
@@ -699,7 +688,7 @@ export default {
         }
     },
 
-    /*async beforeRouteEnter(to, from, next) {
+    async beforeRouteEnter(to, from, next) {
         try {
             let result = await axios.get('/api/admin/attributes');
             let categories = await axios.get('/api/admin/categories');
@@ -715,7 +704,7 @@ export default {
                 });
             });
         }
-    }*/
+    }
 }
 </script>
 

@@ -103,6 +103,9 @@ if (token) {
         const admin = result.data;
         store.state.auth.authenticated = true;
         store.state.auth.user = admin;
+        router.push({
+            name: 'dashboard'
+        });
     });
 }
 

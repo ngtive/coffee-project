@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attribute;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use Intervention\Image\Facades\Image;
 
 class ProductController extends Controller {
@@ -14,11 +18,6 @@ class ProductController extends Controller {
 
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request) {
         $productQuery = Product::query();
 
@@ -67,7 +66,9 @@ class ProductController extends Controller {
             return $productQuery->paginate($request->get('per_page') ?? 20);
         }
 
-        return $productQuery->get();
+        return Inertia::render('Admin/products/ProductsList', [
+            'products' => $productQuery->paginate($request->get('per_page') ?? 24)
+        ]);
     }
 
     public function activeIndex(Request $request) {
@@ -117,21 +118,24 @@ class ProductController extends Controller {
         return $productQuery->get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create() {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
+    public function showStoreForm(Request $request) {
+        return Inertia::render('Admin/products/NewProduct', [
+            'categories' => Category::all()->map(function ($item) {
+                $item['selected'] = false;
+                return $item;
+            }),
+            'brands' => Brand::all(),
+            'attributes' => Attribute::all()->map(function ($item) {
+                $item['selected_value'] = null;
+                return $item;
+            }),
+        ]);
+    }
+
     public function store(Request $request) {
         $validated = $this->validate($request, [
             'title' => 'required|string|max:200',
@@ -181,12 +185,6 @@ class ProductController extends Controller {
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(Request $request, Product $product) {
         $product->load(['productAttributes.attributeValues.attribute']);
 
@@ -206,23 +204,10 @@ class ProductController extends Controller {
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id) {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Product $product) {
         $validated = $this->validate($request, [
             'title' => 'required|string',
@@ -274,12 +259,6 @@ class ProductController extends Controller {
         return $product;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Product $product) {
         $product->delete();
         return ['ok' => true];

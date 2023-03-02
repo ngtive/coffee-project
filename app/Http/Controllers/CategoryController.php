@@ -6,20 +6,15 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class CategoryController extends Controller {
-
     public function __construct() {
-        $this->middleware('auth:admin-api')->except(['index', 'show', 'products']);
+        $this->middleware('auth:admin')->except(['index', 'products']);
     }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request) {
         $categories = Category::query();
+
         if ($request->has('withoutChildren') && $request->get('withoutChildren') == '1') {
             $categories->whereDoesntHave('children');
         }
@@ -41,9 +36,13 @@ class CategoryController extends Controller {
         if ($request->has('hideChildren')) {
             $categories->without(['children']);
         }
-        return $categories->get();
-    }
 
+        return Inertia::render('Admin/categories/ListCategory', [
+            'categories' => $categories->get(),
+            'rootCategories' => $categories->whereDoesntHave('parent')->with('children')->get(),
+            'allCategories' => Category::all()
+        ]);
+    }
     public function activeIndex(Request $request) {
         $categories = Category::query()->where('status', 1);
         if ($request->has('withoutChildren') && $request->get('withoutChildren') == '1') {
@@ -60,29 +59,17 @@ class CategoryController extends Controller {
 
         return $categories->with('parent')->get();
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create() {
         //
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request) {
         $validated = $this->validate($request, [
             'name' => 'required|string',
             'name_en' => 'required|string',
             'cover' => 'sometimes|file',
         ]);
-        if ($request->has('parent_id') && $request->parent_id != 'null') {
+
+        if ($request->has('parent_id') && $request->parent_id != null) {
             $this->validate($request, [
                 'parent_id' => 'required|numeric|exists:App\Models\Category,id'
             ]);
@@ -111,12 +98,6 @@ class CategoryController extends Controller {
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function show(Request $request, Category $category) {
         $category->load('parent');
 
@@ -125,9 +106,11 @@ class CategoryController extends Controller {
         }
 
         $category->loadCount('products');
-        return $category;
+        return Inertia::render('Admin/categories/EditCategory', [
+            'category' => $category,
+            'categories' => Category::all(),
+        ]);
     }
-
     public function products(Request $request, Category $category) {
         if (!$category->status) {
             return response()->json([
@@ -143,29 +126,15 @@ class CategoryController extends Controller {
 
         return $products->get();
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id) {
         //
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Category $category) {
         $this->validate($request, [
             'name' => 'required|string',
             'name_en' => 'required|string',
         ]);
+
 
         if ($request->hasFile('cover')) {
             $this->validate($request, [
@@ -178,9 +147,10 @@ class CategoryController extends Controller {
             $category->status = ($request->status == '1' || $request->status == 'true');
         }
 
-        if ($request->has('parent_id') && $request->parent_id != 'null' && $request->parent_id != $category->id) {
+
+        if ($request->has('parent_id') && $request->parent_id != null && $request->parent_id != $category->id) {
             $this->validate($request, [
-                'parent_id' => 'required|numeric|exists:App\Models\Category,id'
+                'parent_id' => 'required|exists:App\Models\Category,id'
             ]);
             $category->parent_id = $request->parent_id;
         }
@@ -193,20 +163,13 @@ class CategoryController extends Controller {
         $category->save();
         $category->load(['parent', 'children']);
         $category->loadCount('products');
-        return $category;
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
+        return $this->show($request, $category);
+    }
     public function destroy(Request $request, Category $category) {
         $category->deleteOrFail();
         return $this->index($request);
     }
-
     public function attachToProduct(Request $request, Product $product) {
 
         $this->validate($request, [

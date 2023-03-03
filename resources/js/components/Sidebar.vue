@@ -27,7 +27,7 @@
                 </a>
             </Link>
             <Link active-class="active" as="li" class="nav-item"
-                  href="#">
+                  :href="$route('attributes.index')">
                 <a class="nav-link" href="#">
                     <em class="fa fa-project-diagram me-1"></em>
                     تنوع ها

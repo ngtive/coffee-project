@@ -87,17 +87,21 @@
 
 <script>
 
+import {useForm} from "@inertiajs/vue2";
+
 export default {
     name: "UsersList",
     data: () => ({
-        users: store.state.users,
-        search: {
+        search: useForm({
             first_name: null,
             last_name: null,
             phone_number: null,
-        },
-        loading: false,
+        })
     }),
+
+    props: {
+        users: Object,
+    },
 
     methods: {
         cellClick(user) {

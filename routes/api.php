@@ -54,71 +54,71 @@ Route::prefix('auth')->middleware(['cors'])->group(function () {
 });
 
 
-//Route::middleware(['auth:admin-api'])->prefix('admin')->group(function () {
-//
-//    /* Auth */
-//    Route::get('/', [\App\Http\Controllers\Auth\Admin\LoginController::class, 'currentUser']);
-//    Route::get('logout', [\App\Http\Controllers\Auth\Admin\LoginController::class, 'logout']);
-//
-//    /* Products */
-//    Route::post('products/cover', [\App\Http\Controllers\ProductController::class, 'uploadCover']);
-//    Route::resource('products', \App\Http\Controllers\ProductController::class);
-//    Route::post('products/{product}/brand', [\App\Http\Controllers\ProductController::class, 'addBrand']);
-//    Route::delete('products/{product}/brand', [\App\Http\Controllers\ProductController::class, 'deleteBrand']);
-//
-//    Route::get('attributes', [\App\Http\Controllers\ProductAttributeController::class, 'indexAttribute']);
-//    Route::post('attributes', [\App\Http\Controllers\ProductAttributeController::class, 'storeAttribute']);
-//    Route::get('attributes/{attribute}', [\App\Http\Controllers\ProductAttributeController::class, 'showAttribute']);
-//    Route::post('attributes/{attribute}/values', [\App\Http\Controllers\ProductAttributeController::class, 'storeAttributeValue']);
-//
-//
-//    /* Store, update, delete ProductAttribute */
-//    Route::post('product_attributes', [\App\Http\Controllers\ProductAttributeController::class, 'storeProductAttribute']);
-//    Route::post('products/{product}/product_attribute', [\App\Http\Controllers\ProductAttributeController::class, 'storeProductAttribute']);
-//    Route::delete('productAttributes/{productAttribute}', [\App\Http\Controllers\ProductAttributeController::class, 'destroy']);
-//    Route::patch('productAttributes/{productAttribute}', [\App\Http\Controllers\ProductAttributeController::class, 'update']);
-//
-//    /* Categories */
-//    Route::resource('categories', \App\Http\Controllers\CategoryController::class);
-//    /* Attach categories to product */
-//    Route::post('products/{product}/categories', [\App\Http\Controllers\CategoryController::class, 'attachToProduct']);
-//
-//
-//    /* Brands */
-//    Route::resource('brands', \App\Http\Controllers\BrandController::class);
-//
-//
-//    /* Orders */
-//    Route::get('orders', [\App\Http\Controllers\OrderController::class, 'index']);
-//    Route::get('orders/stats', [\App\Http\Controllers\OrderController::class, 'statistics']);
-//
-//    Route::get('orders/{order}', [\App\Http\Controllers\OrderController::class, 'show']);
-//    Route::post('orders/sent', [\App\Http\Controllers\OrderController::class, 'sent']);
-//    Route::post('orders/print', [\App\Http\Controllers\OrderController::class, 'print']);
-//    Route::get('orders/user/{user}', [\App\Http\Controllers\OrderController::class, 'userOrders']);
-////    Route::get('orders/user/{user}/print')
-//
-//    /* Users */
-//    Route::get('users', [\App\Http\Controllers\UserController::class, 'index'])->name('users');
-//    Route::get('users/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
-//    Route::patch('users/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('user.update');
-//
-//
-//    /* Addresses */
-//    Route::get('addresses', [\App\Http\Controllers\AddressController::class, 'addressList']);
-//    Route::get('users/{user}/addresses', [\App\Http\Controllers\AddressController::class, 'showUserAddresses']);
-//
-//
-//    /* Discounts */
-//    Route::get('discounts', [\App\Http\Controllers\DiscountController::class, 'discountList'])->name('discounts');
-//    Route::get('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'showDiscount']);
-//    Route::patch('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'updateDiscount']);
-//    Route::delete('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'deleteDiscount']);
-//    Route::post('discounts/{product}', [\App\Http\Controllers\DiscountController::class, 'storeDiscount']);
-//
-//    Route::resource('articles', \App\Http\Controllers\ArticleController::class);
-//    Route::resource('product-specifications', \App\Http\Controllers\ProductSpecificationController::class);
-//});
+Route::middleware(['auth:admin'])->prefix('admin')->group(function () {
+
+    /* Auth */
+    Route::get('/', [\App\Http\Controllers\Auth\Admin\LoginController::class, 'currentUser']);
+    Route::get('logout', [\App\Http\Controllers\Auth\Admin\LoginController::class, 'logout']);
+
+    /* Products */
+    Route::post('products/cover', [\App\Http\Controllers\ProductController::class, 'uploadCover']);
+    Route::resource('products', \App\Http\Controllers\ProductController::class);
+    Route::post('products/{product}/brand', [\App\Http\Controllers\ProductController::class, 'addBrand']);
+    Route::delete('products/{product}/brand', [\App\Http\Controllers\ProductController::class, 'deleteBrand']);
+
+    Route::get('attributes', [\App\Http\Controllers\ProductAttributeController::class, 'indexAttribute']);
+    Route::post('attributes', [\App\Http\Controllers\ProductAttributeController::class, 'storeAttribute']);
+    Route::get('attributes/{attribute}', [\App\Http\Controllers\ProductAttributeController::class, 'showAttribute']);
+    Route::post('attributes/{attribute}/values', [\App\Http\Controllers\ProductAttributeController::class, 'storeAttributeValue']);
+
+
+    /* Store, update, delete ProductAttribute */
+    Route::post('product_attributes', [\App\Http\Controllers\ProductAttributeController::class, 'storeProductAttribute']);
+    Route::post('products/{product}/product_attribute', [\App\Http\Controllers\ProductAttributeController::class, 'storeProductAttribute']);
+    Route::delete('productAttributes/{productAttribute}', [\App\Http\Controllers\ProductAttributeController::class, 'destroy']);
+    Route::patch('productAttributes/{productAttribute}', [\App\Http\Controllers\ProductAttributeController::class, 'update']);
+
+    /* Categories */
+    Route::resource('categories', \App\Http\Controllers\CategoryController::class);
+    /* Attach categories to product */
+    Route::post('products/{product}/categories', [\App\Http\Controllers\CategoryController::class, 'attachToProduct']);
+
+
+    /* Brands */
+    Route::resource('brands', \App\Http\Controllers\BrandController::class);
+
+
+    /* Orders */
+    Route::get('orders', [\App\Http\Controllers\OrderController::class, 'index']);
+    Route::get('orders/stats', [\App\Http\Controllers\OrderController::class, 'statistics']);
+
+    Route::get('orders/{order}', [\App\Http\Controllers\OrderController::class, 'show']);
+    Route::post('orders/sent', [\App\Http\Controllers\OrderController::class, 'sent']);
+    Route::post('orders/print', [\App\Http\Controllers\OrderController::class, 'print']);
+    Route::get('orders/user/{user}', [\App\Http\Controllers\OrderController::class, 'userOrders']);
+//    Route::get('orders/user/{user}/print')
+
+    /* Users */
+    Route::get('users', [\App\Http\Controllers\UserController::class, 'index'])->name('users');
+    Route::get('users/{user}', [\App\Http\Controllers\UserController::class, 'show'])->name('user.show');
+    Route::patch('users/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('user.update');
+
+
+    /* Addresses */
+    Route::get('addresses', [\App\Http\Controllers\AddressController::class, 'addressList']);
+    Route::get('users/{user}/addresses', [\App\Http\Controllers\AddressController::class, 'showUserAddresses']);
+
+
+    /* Discounts */
+    Route::get('discounts', [\App\Http\Controllers\DiscountController::class, 'discountList'])->name('discounts');
+    Route::get('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'showDiscount']);
+    Route::patch('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'updateDiscount']);
+    Route::delete('discounts/{discount}', [\App\Http\Controllers\DiscountController::class, 'deleteDiscount']);
+    Route::post('discounts/{product}', [\App\Http\Controllers\DiscountController::class, 'storeDiscount']);
+
+    Route::resource('articles', \App\Http\Controllers\ArticleController::class);
+    Route::resource('product-specifications', \App\Http\Controllers\ProductSpecificationController::class);
+});
 
 
 Route::middleware('auth:api')->prefix('user')->group(function () {

@@ -1,7 +1,7 @@
 <template>
-    <div v-loading="loading" class="container">
+    <div class="container">
         <div class="row border-bottom">
-            <div class="col-6">
+            <div class="col-12">
                 <h2 class="text-muted">مقادیر تنوع {{ attribute.name }}</h2>
             </div>
         </div>
@@ -20,20 +20,29 @@
                                 <div class="col-12 mb-3">
                                     <label class="form-label">مقدار {{ attribute.name }}</label>
                                 </div>
-                                <div :class="{'col-lg-2': attribute.is_color}"
+                                <div :class="{'col-lg-4': attribute.is_color}"
                                      class="col-12 mb-3">
-                                    <input v-if="attribute.is_color" v-model="value" class="form-control" dir="ltr"
+                                    <input v-if="attribute.is_color" v-model="form.value" class="form-control mb-1"
+                                           dir="ltr"
                                            type="color">
-                                    <el-input-number v-else-if="attribute.is_weight"
-                                                     v-model="value"
-                                                     :controls="false"
-                                                     placeholder="وزن به گرم"
-                                                     size="mini"></el-input-number>
+                                    <el-input v-if="isColor"
+                                              v-model="form.value"
+                                              size="mini"></el-input>
+                                    <el-input v-else-if="attribute.is_weight"
+                                              v-model="form.value"
+                                              class="w-auto"
+                                              placeholder="وزن به گرم"
+                                              size="mini"></el-input>
                                     <el-input v-else
-                                              v-model="value"
+                                              v-model="form.value"
                                               class="w-100"
                                               placeholder="مقدار"
                                               size="medium"></el-input>
+
+                                    <span v-if="form.errors.value"
+                                          class="text-danger d-block ms-1 mt-1">
+                                        {{ form.errors.value }}
+                                    </span>
 
                                 </div>
                                 <div v-if="attribute.is_color" class="col-12 col-lg-3 mb-2">
@@ -79,76 +88,51 @@
 </template>
 
 <script>
+import {useForm} from "@inertiajs/vue2";
+
 export default {
     name: "ListAttributeValues",
 
     data: function () {
         return {
-            attribute: store.state.attribute,
-            value: undefined,
-            isColor: store.state.attribute.is_color,
-            isWeight: store.state.attribute.is_weight,
-            loading: false,
+            form: useForm({
+                value: undefined,
+                is_color: this.attribute.is_color,
+                is_weight: this.attribute.is_weight,
+            })
+        }
+    },
+
+    props: {
+        attribute: Object,
+    },
+
+    computed: {
+        isColor() {
+            this.attribute.is_color;
+        },
+        isWeight() {
+            this.attribute.is_weight;
         }
     },
 
     methods: {
         addValue() {
-
-            // this.$swal({
-            //     title: 'مقدار را وارد کنید',
-            //     input: 'text',
-            //     inputLabel: 'مقدار',
-            //     showCancelButton: true,
-            //     cancelButtonText: 'انصرف',
-            //     confirmButtonText: 'ذخیره',
-            //     confirmButtonColor: 'green'
-            // }).then((result) => {
-            //     if (result.isConfirmed) {
-            //         let value = result.value;
-            //         this.loading = true;
-            //
-            //         axios.post('/api/admin/attributes/' + this.attribute.id + '/values', {
-            //             value: value,
-            //         }).then((result) => {
-            //             this.loading = false;
-            //             this.attribute.values.unshift(result.data);
-            //
-            //         }).catch((reason) => {
-            //             this.loading = false;
-            //             this.$swal({
-            //                 title: 'مشکلی پیش آمده',
-            //             });
-            //         });
-            //     }
-            // });
-
-            if (this.isWeight) {
-                this.value = this.value + ' گرمی';
-            }
-
-            axios.post('/api/admin/attributes/' + this.attribute.id + '/values', {
-                value: this.value,
-                is_color: this.isColor,
-                is_weight: this.isWeight,
-            })
-                .then((result) => {
-                    this.attribute.values.unshift(result.data);
-                })
-        }
-    },
-
-    async beforeRouteEnter(to, from, next) {
-        let id = to.params.id;
-        try {
-            let result = await axios.get('/api/admin/attributes/' + id)
-            store.state.attribute = result.data;
-            next();
-        } catch (e) {
-            next(vm => {
-                vm.$swal({
-                    title: 'مشکلی پیش آمد',
-                });
+            this.form.post(this.$route('attribute.store.values', this.attribute.id), {
+                onSuccess: () => {
+                    this.$notify({
+                        title: 'افزودن مقدار به تنوع',
+                        type: 'success',
+                        message: 'افزودن مقدار انجام شد'
+                    });
+                },
+                onError: () => {
+                    this.$notify({
+                        title: 'افزودن تنوع',
+                        type: 'error',
+                        message: 'افزودن مقدار با خطا مواجه شد مجدد امتحان کنید'
+                    });
+                }
             });
         }
     }

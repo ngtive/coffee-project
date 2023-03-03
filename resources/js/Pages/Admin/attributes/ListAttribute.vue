@@ -1,5 +1,5 @@
 <template>
-    <div v-loading="loading" class="container">
+    <div class="container">
         <div class="row border-bottom">
             <div class="col-6">
                 <h2 class="text-muted">تنوع ها</h2>
@@ -60,7 +60,7 @@
                         <el-table-column align="right">
                             <template slot-scope="{row}">
                                 <el-button size="mini" type="info"
-                                           @click="$router.push({name: 'attributes-values', params: {id:row.id}})">
+                                           @click="$inertia.get($route('attributes.show', row.id))">
                                     ویرایش
                                     <em class="fa fa-pen"></em>
                                 </el-button>
@@ -76,50 +76,53 @@
 </template>
 
 <script>
+import {useForm} from "@inertiajs/vue2";
+
 export default {
     name: "ListAttribute",
     data: function () {
         return {
-            attributes: store.state.attributes,
-            attribute: {
+            attribute: useForm({
                 name: undefined,
                 is_color: false,
                 is_weight: false,
                 values: [],
-            },
-            loading: false,
+            }),
         }
+    },
+    props: {
+        attributes: Array
     },
 
     methods: {
-        addAttribute() {
-
-            this.loading = true;
-
-            axios.post('/api/admin/attributes', {
-                name: this.attribute.name,
-                is_color: this.attribute.is_color,
-                is_weight: this.attribute.is_weight,
-            }).then((result) => {
-                this.attributes.unshift(result.data);
-                this.loading = false;
-
-                this.$router.push({
-                    name: 'attributes-values',
-                    params: {
-                        id: result.data.id
-                    }
-                });
-
-            }).catch((reason) => {
-                this.loading = false;
-                this.$notify({
-                    title: 'مشکلی پیش آمده',
-                    message: 'مشکلی در افزودن تنوع جدید ایجاد شد کد ارور: ' + reason.response.status,
-                    type: 'error'
-                });
-            });
-        }
+        // addAttribute() {
+        //
+        //     this.loading = true;
+        //
+        //     axios.post('/api/admin/attributes', {
+        //         name: this.attribute.name,
+        //         is_color: this.attribute.is_color,
+        //         is_weight: this.attribute.is_weight,
+        //     }).then((result) => {
+        //         this.attributes.unshift(result.data);
+        //         this.loading = false;
+        //
+        //         this.$router.push({
+        //             name: 'attributes-values',
+        //             params: {
+        //                 id: result.data.id
+        //             }
+        //         });
+        //
+        //     }).catch((reason) => {
+        //         this.loading = false;
+        //         this.$notify({
+        //             title: 'مشکلی پیش آمده',
+        //             message: 'مشکلی در افزودن تنوع جدید ایجاد شد کد ارور: ' + reason.response.status,
+        //             type: 'error'
+        //         });
+        //     });
+        // }
     },
 
     async beforeRouteEnter(to, from, next) {

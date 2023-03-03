@@ -1,5 +1,5 @@
 <template>
-    <div v-loading="loading" class="container">
+    <div class="container">
         <div class="row border-bottom">
             <h2 class="col-12 text-muted">افزودن محصول</h2>
         </div>
@@ -13,8 +13,8 @@
                                 <label class="form-label required" for="title">نام فارسی محصول</label>
                                 <el-input id="title" v-model="product.title"
                                           placeholder="نام محصول (فارسی)" size="mini"></el-input>
-                                <div v-if="validations.title" class="text-danger">
-                                    {{ validations.title[0] }}
+                                <div v-if="product.errors.title" class="text-danger d-block ms-1 mt-1">
+                                    {{ product.errors.title }}
                                 </div>
                             </div>
                             <div class="col-12 col-lg-6 mb-3">
@@ -22,16 +22,17 @@
                                 <el-input id="title_en" v-model="product.title_en"
                                           placeholder="نام محصول(انگلیسی)"
                                           size="mini"></el-input>
-                                <div v-if="validations.title_en" class="text-danger">
-                                    {{ validations.title_en[0] }}
+                                <div v-if="product.errors.title_en" class="text-danger d-block ms-1 mt-1">
+                                    {{ product.errors.title_en }}
                                 </div>
                             </div>
                             <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label required">دسته بندی<br>
-                                    <router-link class="border-bottom text-primary" tag="span" to="/categories/new">
+                                    <Link :href="$route('categories.index')" as="a"
+                                          class="border-bottom text-primary text-decoration-none">
                                         (ایجاد دسته
                                         بندی جدید)
-                                    </router-link>
+                                    </Link>
                                 </label>
                                 <el-select v-model="product.category" class="d-block" placeholder="انتخاب دسته بندی"
                                            size="mini">
@@ -41,15 +42,19 @@
                                         :label="category.name"
                                         :value="category.id"></el-option>
                                 </el-select>
-
+                                <span v-if="product.errors.category"
+                                      class="text-danger ms-1 mt-1 d-block">
+                                    {{ product.errors.category }}
+                                </span>
                             </div>
                             <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label">برند
                                     <br>
-                                    <router-link class="text-primary border-bottom" tag="span" to="/brands/new">(ایجاد
+                                    <Link :href="$route('brands.index')"
+                                          class="text-primary border-bottom text-decoration-none">(ایجاد
                                         برند
                                         جدید)
-                                    </router-link>
+                                    </Link>
                                 </label>
                                 <el-select v-model="product.brand" class="d-block" placeholder="انتخاب برند"
                                            size="mini">
@@ -62,6 +67,9 @@
                                                :value="brand.id">
                                     </el-option>
                                 </el-select>
+                                <span v-if="product.errors.brand" class="text-danger ms-1 mt-1 d-block">
+                                    {{ product.errors.brand }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -104,13 +112,13 @@
                                                      dir="ltr"
                                                      placeholder="قیمت به تومان"
                                                      size="mini"></el-input-number>
-                                    <span v-if="product.price && !validations.price "
+                                    <span v-if="product.price && !product.errors.price"
                                           class="text-muted d-block ms-1 mt-1">
-                                {{ product.price.toLocaleString() }} تومان
-                            </span>
-                                    <span v-if="validations.price" class="text-danger">
-                                {{ validations.price[0] }}
-                            </span>
+                                        {{ product.price.toLocaleString() }} تومان
+                                    </span>
+                                    <span v-if="product.errors.price" class="text-danger d-block ms-1 mt-1">
+                                        {{ product.errors.price }}
+                                    </span>
                                 </div>
                                 <div class="col-12 col-lg-3 mb-3">
                                     <label class="form-label">وزن بسته بندی (در صورت بدون تنوع بودن الزامی)</label>
@@ -120,13 +128,13 @@
                                                      dir="ltr"
                                                      placeholder="وزن به گرم"
                                                      size="mini"></el-input-number>
-                                    <span v-if="product.weight && !validations.weight"
+                                    <span v-if="product.weight && !product.errors.weight"
                                           class="text-muted mt-1 ms-1 d-block">
-                                {{ product.weight.toLocaleString() }} گرم
-                            </span>
-                                    <span v-if="validations.weight" class="text-danger">{{
-                                            validations.weight[0]
-                                        }}</span>
+                                        {{ product.weight.toLocaleString() }} گرم
+                                    </span>
+                                    <span v-if="product.errors.weight" class="text-danger d-block ms-1 mt-1">
+                                        {{ product.errors.weight }}
+                                    </span>
                                 </div>
                                 <div class="col-12 col-lg-3 mb-3">
                                     <label class="form-label">موجودی انبار (در صورت بدون تنوع بودن الزامی)</label>
@@ -137,8 +145,13 @@
                                         dir="ltr"
                                         placeholder="تعداد در انبار"
                                         size="mini"></el-input-number>
-                                    <span v-if="product.quantity" class="text-muted mt-1 ms-1 d-block">
+                                    <span v-if="product.quantity && !product.errors.quantity"
+                                          class="text-muted mt-1 ms-1 d-block">
                                         {{ product.quantity.toLocaleString() }} عدد
+                                    </span>
+                                    <span v-if="product.errors.quantity"
+                                          class="text-danger ms-1 mt-1 d-block">
+                                        {{ product.errors.quantity }}
                                     </span>
                                 </div>
                             </div>
@@ -147,13 +160,15 @@
 
                     <h6 class="border-bottom pb-1">تنوع</h6>
                     <span class="text-muted mb-5">درصورتی که محصول بدون تنوع و از نظر مشخصات تک به فروش می رسد این قسمت را تکمیل نکنید<br>حتما قیمت و وزن محصول بدون تنوع وارد شود</span>
-                    <router-link class="text-primary text-decoration-none mb-3" tag="a" to="/attributes">
+                    <Link :href="$route('attributes.index')" class="text-primary text-decoration-none mb-3">
                         (درخواست ایجاد مشخصه تنوع جدید)
-                    </router-link>
+                    </Link>
+
+                    <!--  TODO: Link to attribute new                   -->
 
 
-                    <form class="col-12 col-lg-7 mb-3" @submit.prevent="addProductAttribute(product.product_attribute)">
-                        <div v-loading="product.product_attribute.loading" class="border rounded p-2 mt-2"
+                    <form class="col-12 col-lg-7 mb-3" @submit.prevent="addProductAttribute(product_attribute)">
+                        <div v-loading="product_attribute.loading" class="border rounded p-2 mt-2"
                              style="border-style: dashed !important;">
                             <div class="row">
                                 <div v-for="attribute in attributes" :key="attribute.id" class="col-12 mb-3 col-lg-4">
@@ -188,33 +203,35 @@
 
                                 <div class="col-12 mb-3 col-lg-4">
                                     <label class="form-label required">وزن بسته بندی تنوع</label>
-                                    <el-input-number v-model="product.product_attribute.weight"
+                                    <el-input-number v-model="product_attribute.weight"
                                                      :controls="false"
 
                                                      placeholder="وزن بسته بندی به گرم"
                                                      size="mini"
                                                      style="width: 100%"></el-input-number>
-                                    <span v-if="product.product_attribute.validation.weight" class="text-danger">
-                                {{ product.product_attribute.validation.weight }}
+                                    <span v-if="product_attribute.validations.weight"
+                                          class="text-danger d-block ms-1 mt-1">
+                                {{ product_attribute.validations.weight }}
                             </span>
                                 </div>
 
                                 <div class="col-12 mb-3 col-lg-4">
                                     <label class="form-label required">قیمت تنوع</label>
-                                    <el-input-number v-model="product.product_attribute.amount"
+                                    <el-input-number v-model="product_attribute.amount"
                                                      :controls="false"
                                                      placeholder="قیمت به تومان"
                                                      size="mini"
                                                      style="width: 100%"></el-input-number>
-                                    <span v-if="product.product_attribute.validation.amount" class="text-danger">
-                                {{ product.product_attribute.validation.amount }}
+                                    <span v-if="product_attribute.validations.amount"
+                                          class="text-danger d-block ms-1 mt-1">
+                                {{ product_attribute.validations.amount }}
                             </span>
                                 </div>
 
                                 <div class="col-12 mb-3 col-lg-4">
                                     <label class="form-label required">موجودی انبار</label>
                                     <el-input-number
-                                        v-model="product.product_attribute.quantity"
+                                        v-model="product_attribute.quantity"
                                         :controls="false"
                                         placeholder="تعداد"
                                         size="mini"
@@ -307,32 +324,32 @@
                             <div class="col-12 col-lg-6 mb-3">
                                 <div class="border rounded p-2 mt-2"
                                      style="border-style: dashed !important;">
-                                    <form v-loading="product.specification.loading" class="row"
+                                    <form v-loading="specification.loading" class="row"
                                           @submit.prevent="addSpecification">
                                         <div class="col-12 col-lg-6 mb-2">
                                             <label class="form-label">
                                                 نام مشخصه
                                             </label>
-                                            <el-input v-model="product.specification.name"
+                                            <el-input v-model="specification.name"
                                                       placeholder="نام مشخصه"
                                                       size="mini"
                                                       type="text"></el-input>
-                                            <span v-if="product.specification.validations.name"
-                                                  class="text-danger d-block ms-1 mt-1"
-                                                  v-text="product.specification.validations.name[0]">
+                                            <span v-if="specification.validations.name"
+                                                  class="text-danger d-block ms-1 mt-1 d-block ms-1 mt-1"
+                                                  v-text="specification.validations.name[0]">
                                             </span>
                                         </div>
                                         <div class="col-12 col-lg-6 mb-2">
                                             <label class="form-label">
                                                 مقدار مشخصه
                                             </label>
-                                            <el-input v-model="product.specification.value"
+                                            <el-input v-model="specification.value"
                                                       placeholder="مقدار مشخصه"
                                                       size="mini"
                                                       type="text"></el-input>
-                                            <span v-if="product.specification.validations.value"
-                                                  class="d-block mt-1 ms-1 text-danger"
-                                                  v-text="product.specification.validations.value[0]">
+                                            <span v-if="specification.validations.value"
+                                                  class="d-block mt-1 ms-1 text-danger d-block ms-1 mt-1"
+                                                  v-text="specification.validations.value[0]">
                                             </span>
                                         </div>
                                         <div>
@@ -349,11 +366,11 @@
                             </div>
                             <div class="col-12 col-lg-6 mb-3 text-end">
                                 <div class="d-flex flex-column gap-1">
-                                    <div v-for="specification in product.specifications"
-                                         :key="specification.id"
+                                    <div v-for="s in product.specifications"
+                                         :key="s.id"
                                          class="d-flex justify-content-between p-1 border rounded">
-                                        <span class="fs-4">{{ specification.name }}</span>
-                                        <span class="fs-6">{{ specification.value }}</span>
+                                        <span class="fs-4">{{ s.name }}</span>
+                                        <span class="fs-6">{{ s.value }}</span>
                                         <span class="text-end">
                                             <el-button size="mini"
                                                        type="danger">
@@ -375,14 +392,15 @@
 </template>
 
 <script>
+import {Link, useForm} from "@inertiajs/vue2";
+
 export default {
     name: "NewProduct",
+    components: {
+        Link,
+    },
     data: () => ({
-        attributes: store.state.attributes,
-        categories: store.state.categories,
-        brands: store.state.brands,
-
-        product: {
+        product: useForm({
             title: undefined,
             title_en: undefined,
             price: undefined,
@@ -392,22 +410,24 @@ export default {
             quantity: undefined,
             category: undefined,
             brand: undefined,
+            cover: undefined,
             product_attributes: [],
             specifications: [],
-            specification: {
-                name: undefined,
-                value: undefined,
-                validations: {},
-                loading: false,
-            },
-            product_attribute: {
-                weight: undefined,
-                amount: undefined,
-                quantity: undefined,
-                values: [],
-                validation: {},
-                loading: false,
-            },
+
+        }),
+        specification: {
+            name: undefined,
+            value: undefined,
+            validations: {},
+            loading: false,
+        },
+        product_attribute: {
+            weight: undefined,
+            amount: undefined,
+            quantity: undefined,
+            values: [],
+            validations: {},
+            loading: false,
         },
         cover: {
             preview: null,
@@ -423,6 +443,11 @@ export default {
         dragText: '<em class="fa fa-plus text-muted"></em>',
         dragging: false,
     }),
+    props: {
+        categories: Array,
+        brands: Array,
+        attributes: Array,
+    },
 
     methods: {
         onClickCover(event) {
@@ -471,6 +496,7 @@ export default {
                         message: 'در آپلود فایل کاور مشکلی پیش آمد دوباره اپلود کنید',
                         type: 'error'
                     });
+                    this.cover.uploading = false;
                 }
             }
         },
@@ -556,8 +582,8 @@ export default {
                     message: 'مقادیر قیمت و وزن بسته بندی و موجودی انبار برای ایجاد تنوع جدید الزامی است',
                     type: 'warning'
                 });
-                this.product.product_attribute.validation.weight = 'وارد کردن این فیلد الزامی است';
-                this.product.product_attribute.validation.amount = 'وارد کردن این فیلد الزامی است';
+                this.product_attribute.validations.weight = 'وارد کردن این فیلد الزامی است';
+                this.product_attribute.validations.amount = 'وارد کردن این فیلد الزامی است';
                 return;
             }
 
@@ -572,20 +598,20 @@ export default {
             })
                 .then((confirmed) => {
                     if (confirmed.isConfirmed) {
-                        this.product.product_attribute.validation = {};
-                        this.product.product_attribute.loading = true;
+                        this.product_attribute.validations = {};
+                        this.product_attribute.loading = true;
 
                         axios.post('/api/admin/product_attributes', product_attribute)
                             .then((result) => {
                                 this.product.product_attributes.push(result.data);
-                                this.product.product_attribute.loading = false;
+                                this.product_attribute.loading = false;
                             })
                             .catch((reason) => {
                                 this.$notify({
                                     title: 'مشکلی پیش آمده',
                                     type: 'error'
                                 });
-                                this.product.product_attribute.loading = false;
+                                this.product_attribute.loading = false;
                             });
                     }
                 })
@@ -651,15 +677,15 @@ export default {
 
         addSpecification() {
             let params = {};
-            this.product.specification.loading = true;
-            params.name = this.product.specification.name;
-            params.value = this.product.specification.value;
-            this.product.specification.validations = {};
+            this.specification.loading = true;
+            params.name = this.specification.name;
+            params.value = this.specification.value;
+            this.specification.validations = {};
 
             axios.post('/api/admin/product-specifications', params)
                 .then((result) => {
                     this.product.specifications.push(result.data);
-                    this.product.specification = {
+                    this.specification = {
                         name: undefined,
                         value: undefined,
                         validations: {},
@@ -668,9 +694,9 @@ export default {
                 })
                 .catch((reason) => {
                     if (reason.response.status == 422) {
-                        this.product.specification.validations = reason.response.data.errors;
+                        this.specification.validations = reason.response.data.errors;
                     }
-                    this.product.specification.loading = false;
+                    this.specification.loading = false;
                 });
 
         },
@@ -683,6 +709,13 @@ export default {
                         title: 'حذف مشخصه',
                         type: 'success',
                         message: 'مشخصه حذف شد.',
+                    });
+                })
+                .catch((reason) => {
+                    this.$notify({
+                        title: 'حذف مشخصه',
+                        type: 'error',
+                        message: 'حذف مشخصه با خطا مواجه شد مجددا امتحان کنید',
                     });
                 });
         }

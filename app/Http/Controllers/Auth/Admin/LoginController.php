@@ -104,7 +104,7 @@ class LoginController extends Controller {
             ]);
         }
 
-        Auth::guard('admin')->login($admin);
+        Auth::guard('admin')->login($admin, true);
 
         return redirect()->route('admin.home');
     }

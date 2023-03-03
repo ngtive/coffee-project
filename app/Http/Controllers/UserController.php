@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller {
     public function __construct() {
-        $this->middleware('auth:admin-api')->only(['index', 'destroy', 'update', 'show']);
+        $this->middleware('auth:admin')->only(['index', 'destroy', 'update', 'show']);
         $this->middleware('auth:api')->only(['logout', 'showMe']);
     }
 
@@ -17,10 +17,25 @@ class UserController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index(Request $request) {
         $users = User::query();
 
-        return $users->paginate(20);
+        if ($request->has('search')) {
+            $validated = $this->validate($request, [
+                'search' => 'required|string',
+            ]);
+
+            $search = $validated['search'];
+            $users->where(function ($query) use ($search) {
+                $query->where('first_name', 'like', '%' . $search . '%')
+                    ->orWhere('last_name', 'like', '%' . $search . '%')
+                    ->orWhere('phone_number', 'like', '%' . $search . '%');
+            });
+        }
+
+        $users = $users->paginate(24);
+
+        return inertia('Admin/users/UsersList', compact('users'));
     }
 
     /**

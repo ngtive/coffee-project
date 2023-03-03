@@ -132,7 +132,7 @@ class ProductController extends Controller {
             'attributes' => Attribute::all()->map(function ($item) {
                 $item['selected_value'] = null;
                 return $item;
-            }),
+            })->load('values'),
         ]);
     }
 

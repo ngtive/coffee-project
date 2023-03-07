@@ -62,9 +62,12 @@ Route::middleware(['auth:admin'])->prefix('admin')->group(function () {
 
     /* Products */
     Route::post('products/cover', [\App\Http\Controllers\ProductController::class, 'uploadCover']);
+    Route::post('products/gallery', [\App\Http\Controllers\ProductGalleryController::class, 'store']);
+    Route::delete('products/gallery/{productGallery}', [\App\Http\Controllers\ProductGalleryController::class, 'destroy']);
     Route::resource('products', \App\Http\Controllers\ProductController::class);
     Route::post('products/{product}/brand', [\App\Http\Controllers\ProductController::class, 'addBrand']);
     Route::delete('products/{product}/brand', [\App\Http\Controllers\ProductController::class, 'deleteBrand']);
+
 
     Route::get('attributes', [\App\Http\Controllers\ProductAttributeController::class, 'indexAttribute']);
     Route::post('attributes', [\App\Http\Controllers\ProductAttributeController::class, 'storeAttribute']);

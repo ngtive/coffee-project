@@ -13,7 +13,7 @@
         </div>
         <div class="row mt-4 panel">
             <div class="table-responsive">
-                <el-table :data="products">
+                <el-table :data="products.data">
                     <el-table-column align="right">
                         <template slot-scope="scope">
                             <img :src="scope.row.thumbs['200']" alt="Product Thumb" height="100" width="100">
@@ -55,13 +55,13 @@
                         <template slot="header" slot-scope="scope">
                             <div class="d-flex align-items-center justify-content-center">
                                 <el-input v-model="search" placeholder="جستجو محصول" type="text"
-                                          @change="searchChange"></el-input>
-                                <em class="fa fa-search ms-1" @click="searchChange(search)"></em>
+                                          @change="submitSearch"></el-input>
+                                <em class="fa fa-search ms-1" @click="submitSearch"></em>
                             </div>
                         </template>
                         <template slot-scope="scope">
                             <el-button size="mini" type="info"
-                                       @click="$router.push({name: 'edit-product', params: {id: scope.row.id}})">
+                                       @click="$inertia.get($route('products.show', scope.row.id))">
                                 ویرایش
                                 <em class="fa fa-pen"></em>
                             </el-button>
@@ -69,6 +69,12 @@
                         </template>
                     </el-table-column>
                 </el-table>
+                <el-pagination
+                    :current-page="products.current_page"
+                    :page-size="products.per_page"
+                    :total="products.total"
+                    layout="next, pager, prev"
+                    @current-change="(page) => $inertia.get(this.$route('products.index', {page: page, search: search}))"></el-pagination>
             </div>
         </div>
         <div class="row mt-2">
@@ -77,6 +83,8 @@
 </template>
 
 <script>
+import {router} from "@inertiajs/vue2";
+
 export default {
     name: "ProductsList",
     data: () => ({
@@ -115,5 +123,11 @@ export default {
     //             .catch((reason) => {})
     //     }
     // },
+
+    methods: {
+        submitSearch() {
+            router.get(this.$route('products.index', {search: this.search}))
+        },
+    }
 }
 </script>

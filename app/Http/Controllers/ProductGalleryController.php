@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProductGallery;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class ProductGalleryController extends Controller {
     /**
@@ -31,8 +34,33 @@ class ProductGalleryController extends Controller {
      */
     public function store(Request $request) {
         $this->validate($request, [
-            'file' => 'required|file|mimes:jpg,png,svg,jpeg'
+            'file' => 'required|file|mimes:jpg,jpeg,png,webp,sgv',
         ]);
+
+        $file = $request->file('file');
+        $hashName = $file->hashName();
+
+
+        $thumbs = [];
+        for ($i = 100; $i <= 800; $i += 100) {
+            $thumbs[(string)$i] = Image::make($file)->resize($i, function ($const) {
+                $const->aspectRatio();
+            });
+        }
+
+        foreach ($thumbs as $key => $thumb) {
+            Storage::disk('public')->put(
+                'products/gallery/' . $key . '/' . $hashName,
+                (string)$thumb->encode()
+            );
+        }
+
+        $filePath = Storage::disk('public')->putFileAs('products/gallery/org', $file, $hashName);
+
+        return ProductGallery::create([
+            'file' => $hashName,
+        ]);
+
     }
 
     /**
@@ -72,7 +100,8 @@ class ProductGalleryController extends Controller {
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id) {
-        //
+    public function destroy(Request $request, ProductGallery $productGallery) {
+        $productGallery->deleteOrFail();
+        return response()->json(['ok' => true]);
     }
 }

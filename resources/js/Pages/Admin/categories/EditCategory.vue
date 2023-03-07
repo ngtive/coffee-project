@@ -6,7 +6,7 @@
         <div class="row mt-2">
             <form class="col-12 panel" @submit.prevent="submit">
                 <div class="row">
-                    <div class="col-12 col-lg-6">
+                    <div :class="{'col-lg-6': category.cover}" class="col-12">
                         <div class="row">
                             <div class="col-12 col-lg-6 mb-3">
                                 <label class="form-label required" for="name">نام فارسی</label>
@@ -62,10 +62,18 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-6">
+                    <div :class="{'col-lg-6': category.cover}" class="col-12">
                         <div v-if="category.cover">
                             <h6 class="text-center border-bottom pb-1">کاور دسته بندی</h6>
                             <div class="border p-1 rounded">
+                                <div class="text-end mb-2">
+                                    <el-button size="mini"
+                                               type="danger"
+                                               @click="deleteCover">
+                                        <el-icon name="delete"></el-icon>
+                                        حذف کاور
+                                    </el-button>
+                                </div>
                                 <img :src="category.cover" alt="Cover" class="w-100">
                             </div>
                         </div>
@@ -88,7 +96,7 @@
 </template>
 
 <script>
-import {useForm} from "@inertiajs/vue2";
+import {router, useForm} from "@inertiajs/vue2";
 
 export default {
     name: "EditCategory",
@@ -102,7 +110,7 @@ export default {
                 cover: undefined,
                 status: this.category.status ? true : false,
                 _method: 'put'
-            })
+            }),
         }
     },
 
@@ -137,7 +145,37 @@ export default {
                             });
                         }
                     });
-        }
+        },
+        deleteCover() {
+            this.$swal({
+                title: 'حذف کاور دسته بندی',
+                text: 'آیا از حذف کاور دسته بندی اطمینان دارید؟',
+                icon: 'warning',
+                showCancelButton: true,
+                showConfirmButton: true,
+                cancelButtonText: 'انصراف',
+                confirmButtonText: 'تایید',
+            }).then((ok) => {
+                if (ok.isConfirmed) {
+                    router.delete(this.$route('categories.delete-cover', this.category.id), {
+                        onSuccess: () => {
+                            this.$notify({
+                                title: 'حذف کاور',
+                                type: 'success',
+                                message: 'کاور دسته بندی حذف شد',
+                            });
+                        },
+                        onError: () => {
+                            this.$notify({
+                                title: 'حذف کاور',
+                                type: 'error',
+                                message: 'حذف کاور با خطا مواجه شد',
+                            });
+                        }
+                    });
+                }
+            });
+        },
     }
 }
 </script>

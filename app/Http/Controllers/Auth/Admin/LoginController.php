@@ -13,80 +13,13 @@ use Inertia\Inertia;
 use Morilog\Jalali\Jalalian;
 
 class LoginController extends Controller {
-
     public function __construct() {
-        $this->middleware('auth:admin')->only('adminHome');
+        $this->middleware('auth:admin')->only(['logout', 'adminHome']);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index() {
+    public function index(Request $request) {
         return Inertia::render('Admin/Login');
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create() {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request) {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id) {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id) {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id) {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id) {
-        //
-    }
-
 
     public function authenticateWithEmail(Request $request) {
         $validated = $this->validate($request, [
@@ -94,21 +27,15 @@ class LoginController extends Controller {
             'password' => 'required|string',
             'remember' => 'required|boolean',
         ]);
-
         $admin = Admin::where('email', $validated['email'])->first();
-
-
         if (!$admin || !(Hash::check($validated['password'], $admin->password))) {
             return throw \Illuminate\Validation\ValidationException::withMessages([
                 'password' => 'ایمیل یا رمز عبور اشتباه است و با مشخصات ما سازگاری ندارد'
             ]);
         }
-
         Auth::guard('admin')->login($admin, true);
-
         return redirect()->route('admin.home');
     }
-
     public function currentAccessToken(Request $request) {
         $accessToken = $request->user()->currentAccessToken();
 
@@ -143,12 +70,10 @@ class LoginController extends Controller {
             ],
         )->whereNotNull('paid_at')->count();
 
-
         $thisWeekOrders = Order::query()->whereBetween('created_at', [
             Carbon::now()->startOfWeek(Carbon::SATURDAY),
             now(),
         ])->whereNotNull('paid_at')->count();
-
 
         return Inertia::render('Home', [
             'stats' => [

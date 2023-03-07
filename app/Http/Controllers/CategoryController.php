@@ -182,4 +182,10 @@ class CategoryController extends Controller {
 
         return $product->load('categories');
     }
+
+    public function deleteCover(Request $request, Category $category) {
+        $category->cover = null;
+        $category->saveOrFail();
+        return $this->show($request, $category);
+    }
 }

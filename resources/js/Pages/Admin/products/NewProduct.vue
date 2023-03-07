@@ -34,7 +34,8 @@
                                         بندی جدید)
                                     </Link>
                                 </label>
-                                <el-select v-model="product.category" class="d-block" placeholder="انتخاب دسته بندی"
+                                <el-select v-model="product.category" class="d-block" multiple
+                                           placeholder="انتخاب دسته بندی"
                                            size="mini">
                                     <el-option
                                         v-for="category in categories"
@@ -100,6 +101,9 @@
                             </div>
                         </div>
                     </div>
+                    <span v-if="product.errors.cover" class="text-danger mb-3 d-block"> {{
+                            product.errors.cover
+                        }}</span>
 
                     <div class="col-12 mb-3">
                         <div class="border-top mt-4 pt-3">
@@ -205,7 +209,6 @@
                                     <label class="form-label required">وزن بسته بندی تنوع</label>
                                     <el-input-number v-model="product_attribute.weight"
                                                      :controls="false"
-
                                                      placeholder="وزن بسته بندی به گرم"
                                                      size="mini"
                                                      style="width: 100%"></el-input-number>
@@ -285,7 +288,8 @@
                                             <div class="col-12">
                                                 <form @submit.prevent="updateProductAttribute(productAttribute)">
                                                     <div class="col-12">
-                                                        <label class="form-label required mb-0">وزن بسته بندی</label>
+                                                        <label class="form-label required mb-0">وزن بسته
+                                                            بندی(گرم)</label>
                                                         <el-input-number v-model="productAttribute.weight"
                                                                          controls-position="right"
                                                                          size="mini"></el-input-number>
@@ -317,7 +321,7 @@
                     </div>
 
 
-                    <div class="col-12">
+                    <div class="col-12 mb-3">
                         <div class="row">
                             <h6 class="border-bottom pb-1 mb-3">مشخصات تکمیلی</h6>
 
@@ -382,8 +386,52 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-3 border-top pt-3"> <!-- Submit -->
-                        <el-button native-type="submit" type="primary">ثبت</el-button>
+
+                    <div class="col-12 mb-5 mt-2">
+                        <h6 class="text-muted">گالری عکس</h6>
+                        <form class="row border-top mb-5 pt-5 h-100 mb-3">
+                            <div
+                                v-for="image in product.image_galleries" :key="image.id" class="col-12 col-lg-4 mb-3">
+                                <div
+                                    class="border p-2 rounded d-flex justify-content-center align-items-center position-relative">
+                                    <img :src="image.file"
+                                         alt="gallery image"
+                                         class="h-100 w-100">
+                                    <el-button class="position-absolute" size="mini"
+                                               style="z-index: 200; top: .5rem; left: .5rem;" type="danger" @click="deleteGallery(image)">
+                                        <el-icon name="delete"></el-icon>
+                                    </el-button>
+                                </div>
+                            </div>
+                            <div
+                                id="dropGallery" class="col-12 col-lg-4 mb-3"
+                                v-on:click="onGalleryClick"
+                                v-on:dragover.prevent="onGalleryDrag"
+                                v-on:dragleave.prevent="onGalleryDragLeave" v-on:drop.prevent="onGalleryDrop">
+                                <div
+                                    class="border border-dark p-2 rounded d-flex flex-column justify-content-center align-items-center h-100"
+                                    style="border: .2rem dashed #212529 !important">
+                                    <span class="fa fa-plus"></span>
+                                    انتخاب فایل و یا رها کردن فایل در اینجا
+
+                                    <input ref="galleryFile" hidden type="file" v-on:input="onGalleryDrop">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-12 mb-5">
+                        <h6 class="border-bottom p-1 text-muted">توضیحات بیشتر راجب محصول</h6>
+                        <div id="description"></div>
+                    </div>
+
+                    <div class="mt-5 border-top pt-3"> <!-- Submit -->
+
+                        <el-button :disabled="product.processing" native-type="submit" size="mini" type="primary">ثبت
+                        </el-button>
+                        <label class="form-label ms-4 border p-1 rounded">
+                            فعال و قابل نمایش
+                            <el-checkbox v-model="product.status"></el-checkbox>
+                        </label>
                     </div>
                 </div>
             </form>
@@ -405,15 +453,15 @@ export default {
             title_en: undefined,
             price: undefined,
             description: undefined,
-            status: false,
+            status: true,
             weight: undefined,
             quantity: undefined,
-            category: undefined,
+            categories: undefined,
             brand: undefined,
             cover: undefined,
             product_attributes: [],
             specifications: [],
-
+            image_galleries: [],
         }),
         specification: {
             name: undefined,
@@ -429,6 +477,12 @@ export default {
             validations: {},
             loading: false,
         },
+        image_gallery: {
+            files: undefined,
+            dragging: false,
+            drop: false,
+            validation: {},
+        },
         cover: {
             preview: null,
             file: null,
@@ -442,6 +496,8 @@ export default {
 
         dragText: '<em class="fa fa-plus text-muted"></em>',
         dragging: false,
+
+        quilDescription: null,
     }),
     props: {
         categories: Array,
@@ -449,7 +505,112 @@ export default {
         attributes: Array,
     },
 
+    mounted() {
+        let quil = new Quill('#description', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{'header': [1, 2, 3, 4, 5, 6, false]}],
+                    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                    ['blockquote'],
+
+                    [{'header': 1}, {'header': 2}],               // custom button values
+                    [{'list': 'ordered'}, {'list': 'bullet'}],
+                    [{'direction': 'rtl'}],                         // text direction
+
+
+                    [{'color': []}, {'background': []}],          // dropdown with defaults from theme
+                    [{'font': ['ir-sns']}],
+                    [{'align': []}],
+
+                    ['clean'],                                        // remove formatting button,
+                    ['image']
+
+                ]
+            }
+        });
+
+        this.quilDescription = quil;
+    },
+
     methods: {
+
+        onGalleryDrag() {
+            this.image_gallery.dragging = true;
+        },
+        onGalleryDrop(event) {
+            event.preventDefault();
+            this.image_gallery.drop = true;
+            this.image_gallery.dragging = false;
+            let file;
+
+            if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+                file = event.dataTransfer.files[0];
+            } else {
+                file = event.target.files[0];
+            }
+            this.image_gallery.files = [file];
+
+            let form = new FormData();
+            form.set('file', file);
+            axios.post('/api/admin/products/gallery', form).then((result) => {
+                this.product.image_galleries.unshift(result.data);
+                this.$notify({
+                    title: 'آپلود عکس گالری محصول',
+                    type: 'success',
+                    message: 'آپلود عکس گالری محصول با موفقیت انجام شد'
+                });
+            }).catch((reason) => {
+                this.$notify({
+                    title: 'آپلود عکس گالری محصول',
+                    type: 'error',
+                    message: reason.response.data.message,
+                });
+            });
+        },
+        onGalleryDragLeave() {
+            this.image_gallery.dragging = false;
+        },
+        onGalleryClick() {
+            this.$refs.galleryFile.click();
+        },
+
+        deleteGallery(gallery) {
+            this.$swal({
+                title: 'حذف عکس از گالری',
+                icon: 'warning',
+                text: 'آیا با حذف این عکس از گالری عکس محصول موافق هستید؟',
+                showCancelButton: true,
+                showConfirmButton: true,
+                cancelButtonText: 'انصراف '
+            }).then((ok) => {
+                if (ok.isConfirmed) {
+                    axios.delete('/api/admin/products/gallery/' + gallery.id)
+                        .then((result) => {
+                            this.product.image_galleries =
+                                this.product.image_galleries.filter(i => i.id != gallery.id);
+
+                            this.$notify({
+                                title: 'حذف عکس از گالری',
+                                type: 'success',
+                                message: 'عکس از گالری حذف شد'
+                            });
+                        })
+                        .catch((reason) => {
+                            this.$notify({
+                                title: 'حذف عکس از گالری',
+                                type: 'error',
+                                message: 'مشکلی در حذف عکس از گالری پیش آمد'
+                            });
+
+                            if (reason.response.status == 422) {
+                                this.validations = reason.response.data.errors;
+                            }
+                        });
+                }
+            })
+        },
+
         onClickCover(event) {
             this.$refs.cover.click();
         },
@@ -490,6 +651,7 @@ export default {
                         type: "success",
                     });
                     this.cover.uploading = false;
+                    this.product.cover = result.data.cover;
                 } catch (e) {
                     this.$notify({
                         title: 'مشکلی پیش آمد',
@@ -517,54 +679,17 @@ export default {
                 this.cover.preview = URL.createObjectURL(file);
             }
         },
-        async addProduct() {
-            this.loading = true;
-            let formData = new FormData();
-
-            if (this.$refs.cover.files.length > 0) {
-                formData.append('cover', this.$refs.cover.files[0]);
-            }
-            if (this.product.title) {
-                formData.append('title', this.product.title);
-            }
-            if (this.product.title_en) {
-                formData.append('title_en', this.product.title_en);
-            }
-            if (this.product.description) {
-                formData.append('description', this.product.description);
-            }
-            if (this.product.weight) {
-                formData.append('weight', this.product.weight);
-            }
-            if (this.product.price) {
-                formData.append('amount', this.product.price);
-            }
-            if (this.product.quantity) {
-                formData.append('quantity', this.product.quantity);
-            }
-
-            formData.append('status', this.product.status);
-
-            try {
-                let result = await axios.post('/api/admin/products', formData);
-                this.loading = false;
-
-                this.$router.push({
-                    name: 'products'
-                });
-            } catch (e) {
-
-                if (e.response.status == 422) {
-                    this.validations = e.response.data.errors;
-                } else {
-                    this.$swal({
-                        title: 'مشکلی پیش آمد',
-                        icon: 'error'
-                    });
-                }
-
-                this.loading = false;
-            }
+        addProduct() {
+            this.product
+                .transform((i) => ({
+                    ...i,
+                    status: i.status ? '1' : null,
+                    product_attributes: i.product_attributes.length > 0 ? i.product_attributes.map(i => i.id) : null,
+                    specifications: i.specifications.length > 0 ? i.specifications.map(i => i.id) : null,
+                    image_galleries: i.image_galleries.length > 0 ? i.image_galleries.map(i => i.id) : null,
+                    description: this.quilDescription.root.innerHTML != '<p><br></p>' ? this.quilDescription.root.innerHTML : null,
+                }))
+                .post(this.$route('products.store'));
         },
         addProductAttribute(product_attribute) {
             let attributesToObject = {};
@@ -573,7 +698,7 @@ export default {
             this.attributes.forEach(i => {
                 if (i.selected_value) {
                     product_attribute.values.push(i.selected_value);
-                    console.log(i.selected_value);
+                    // console.log(i.selected_value);
                 }
             });
 
@@ -674,7 +799,6 @@ export default {
                         })
                 })
         },
-
         addSpecification() {
             let params = {};
             this.specification.loading = true;
@@ -744,5 +868,13 @@ export default {
 <style>
 .drag-area {
     height: 100%;
+}
+
+.ql-toolbar {
+    direction: ltr;
+}
+
+.el-select__tags {
+    margin-right: .2rem;
 }
 </style>

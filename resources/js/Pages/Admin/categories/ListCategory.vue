@@ -53,8 +53,18 @@
                         </span>
                     </div>
                     <div class="col-12 col-lg-3 mb-3">
-                        <label class="form-label">عکس کاور دسته بندی</label>
+                        <div class="d-flex">
+                            <div class="col-6">
+                                <label class="form-label">عکس کاور دسته بندی</label>
+                            </div>
+                            <!--                            <div class="col-6 text-end">
+                                                            <el-button size="mini" type="text" @click="$refs.categoryCover.value = null">
+                                                                پاک کردن
+                                                            </el-button>
+                                                        </div>-->
+                        </div>
                         <input class="form-control form-control-file form-control-sm" type="file"
+                               ref="categoryCover"
                                @input="category.cover = $event.target.files[0]">
                         <span v-if="category.errors.cover" class="text-danger d-block ms-1 mt-1">
                             {{ category.errors.cover }}
